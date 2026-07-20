@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.core.database import Base
 
@@ -55,4 +55,17 @@ class User(Base):
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
+    )
+
+    # Relationships
+    folders: Mapped[list["Folder"]] = relationship(
+        "Folder",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+    )
+
+    files: Mapped[list["File"]] = relationship(
+        "File",
+        back_populates="owner",
+        cascade="all, delete-orphan",
     )

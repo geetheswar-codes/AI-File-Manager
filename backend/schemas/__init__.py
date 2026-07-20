@@ -4,3 +4,5 @@ from backend.schemas.user import (
     UserResponse,
     Token,
 )
+from .user import *
+from .file import *

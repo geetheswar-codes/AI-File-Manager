@@ -3,6 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.v1.router import api_router
 
+from backend.core.database import Base, engine
+from backend.models import User, Folder, File
+
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+
 tags_metadata = [
     {
         "name": "System",
@@ -25,6 +33,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/", tags=["System"])
 def home():
     return {
@@ -32,12 +41,19 @@ def home():
         "message": "AI File Management Platform Backend is Running 🚀",
     }
 
+
 @app.get("/health", tags=["System"])
 def health():
-    return {"status": "healthy"}
+    return {
+        "status": "healthy"
+    }
+
 
 @app.get("/version", tags=["System"])
 def version():
-    return {"version": "2.0.0"}
+    return {
+        "version": "2.0.0"
+    }
+
 
 app.include_router(api_router)

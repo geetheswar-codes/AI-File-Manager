@@ -1,0 +1,18 @@
+# Virtual Environment
+.venv/
+
+# Environment Variables
+.env
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Database
+*.db
+
+# Uploaded Files
+storage/uploads/
+
+# OS Files
+.DS_Store
