@@ -6,6 +6,10 @@ from backend.models.user import User
 class UserRepository:
 
     @staticmethod
+    def get_by_id(db: Session, user_id: int):
+        return db.query(User).filter(User.id == user_id).first()
+
+    @staticmethod
     def get_by_email(db: Session, email: str):
         return db.query(User).filter(User.email == email).first()
 

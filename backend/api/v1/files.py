@@ -13,14 +13,17 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from backend.core.database import get_db
-from backend.models.file import File as FileModel
+from backend.core.dependencies import get_current_user
+from backend.models.user import User
 from backend.schemas.file import RenameRequest
 from backend.services.file_service import FileService
+
 
 router = APIRouter(
     prefix="/files",
     tags=["Files"],
 )
+
 
 UPLOAD_DIR = "storage/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -30,12 +33,23 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 async def upload_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    unique_name = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
-    file_path = os.path.join(UPLOAD_DIR, unique_name)
+    unique_name = (
+        f"{uuid.uuid4()}"
+        f"{os.path.splitext(file.filename)[1]}"
+    )
+
+    file_path = os.path.join(
+        UPLOAD_DIR,
+        unique_name,
+    )
 
     with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        shutil.copyfileobj(
+            file.file,
+            buffer,
+        )
 
     file_data = {
         "filename": file.filename,
@@ -43,7 +57,7 @@ async def upload_file(
         "file_size": os.path.getsize(file_path),
         "file_type": file.content_type,
         "storage_path": file_path,
-        "owner_id": 1,
+        "owner_id": current_user.id,
         "folder_id": None,
     }
 
@@ -61,12 +75,19 @@ async def upload_file(
 @router.get("/")
 def get_all_files(
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     files = FileService.get_all_files(db)
 
+    user_files = [
+        file
+        for file in files
+        if file.owner_id == current_user.id
+    ]
+
     return {
-        "count": len(files),
-        "files": files,
+        "count": len(user_files),
+        "files": user_files,
     }
 
 
@@ -74,6 +95,7 @@ def get_all_files(
 def get_file(
     file_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     file = FileService.get_file(
         db=db,
@@ -86,6 +108,12 @@ def get_file(
             detail="File not found",
         )
 
+    if file.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have permission to access this file",
+        )
+
     return file
 
 
@@ -94,6 +122,7 @@ def rename_file(
     file_id: int,
     request: RenameRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     file = FileService.get_file(
         db=db,
@@ -104,6 +133,12 @@ def rename_file(
         raise HTTPException(
             status_code=404,
             detail="File not found",
+        )
+
+    if file.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have permission to rename this file",
         )
 
     file.filename = request.filename
@@ -121,6 +156,7 @@ def rename_file(
 def delete_file(
     file_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     file = FileService.get_file(
         db=db,
@@ -131,6 +167,12 @@ def delete_file(
         raise HTTPException(
             status_code=404,
             detail="File not found",
+        )
+
+    if file.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have permission to delete this file",
         )
 
     if os.path.exists(file.storage_path):
@@ -150,6 +192,7 @@ def delete_file(
 def download_file(
     file_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     file = FileService.get_file(
         db=db,
@@ -160,6 +203,12 @@ def download_file(
         raise HTTPException(
             status_code=404,
             detail="File not found",
+        )
+
+    if file.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have permission to download this file",
         )
 
     if not os.path.exists(file.storage_path):
