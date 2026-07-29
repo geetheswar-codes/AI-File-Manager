@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     # ----------------------------
     APP_NAME: str = "AI File Management Platform"
     APP_VERSION: str = "2.0.0"
-    DEBUG: bool = True
+    DEBUG: bool = False
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # ----------------------------
     # Database

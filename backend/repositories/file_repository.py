@@ -34,9 +34,14 @@ class FileRepository:
     @staticmethod
     def get_all(
         db: Session,
+        owner_id: int,
     ):
 
-        return db.query(File).all()
+        return (
+            db.query(File)
+            .filter(File.owner_id == owner_id)
+            .all()
+        )
 
     @staticmethod
     def update(

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 
 class FileBase(BaseModel):
@@ -16,6 +16,16 @@ class FileCreate(FileBase):
 
 class RenameRequest(BaseModel):
     filename: str
+
+    @field_validator("filename")
+    @classmethod
+    def validate_filename(cls, value: str) -> str:
+        value = value.strip()
+
+        if not value:
+            raise ValueError("Filename cannot be empty")
+
+        return value
 
 
 class FileResponse(FileBase):

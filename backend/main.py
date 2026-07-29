@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.v1.router import api_router
 
+from backend.core.config import settings
 from backend.core.database import Base, engine
 from backend.models import User, Folder, File
 
@@ -19,15 +20,14 @@ tags_metadata = [
 ]
 
 app = FastAPI(
-    title="AI File Management Platform",
-    version="2.0.0",
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
     description="AI-powered Secure File Management Platform",
     openapi_tags=tags_metadata,
 )
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[settings.FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,8 +52,7 @@ def health():
 @app.get("/version", tags=["System"])
 def version():
     return {
-        "version": "2.0.0"
+        "version": settings.APP_VERSION
     }
-
 
 app.include_router(api_router)

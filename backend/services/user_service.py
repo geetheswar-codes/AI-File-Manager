@@ -58,4 +58,7 @@ class UserService:
         ):
             return None
 
+        if not user.is_active:
+            return None
+
         return user
