@@ -6,6 +6,7 @@ from fastapi import (
     APIRouter,
     Depends,
     File,
+    Form,
     HTTPException,
     UploadFile,
 )
@@ -32,6 +33,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 @router.post("/upload")
 async def upload_file(
     file: UploadFile = File(...),
+    folder_id: int | None = Form(default=None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -58,13 +60,32 @@ async def upload_file(
         "file_type": file.content_type,
         "storage_path": file_path,
         "owner_id": current_user.id,
-        "folder_id": None,
+        "folder_id": folder_id,
     }
 
-    db_file = FileService.create_file(
-        db=db,
-        file_data=file_data,
-    )
+    try:
+        db_file = FileService.create_file(
+            db=db,
+            file_data=file_data,
+        )
+
+    except PermissionError as exc:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        raise HTTPException(
+            status_code=403,
+            detail=str(exc),
+        )
+
+    except ValueError as exc:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        )
 
     return {
         "message": "File uploaded successfully",
@@ -77,17 +98,14 @@ def get_all_files(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    files = FileService.get_all_files(db)
-
-    user_files = [
-        file
-        for file in files
-        if file.owner_id == current_user.id
-    ]
+    files = FileService.get_all_files(
+        db=db,
+        owner_id=current_user.id,
+    )
 
     return {
-        "count": len(user_files),
-        "files": user_files,
+        "count": len(files),
+        "files": files,
     }
 
 
@@ -141,10 +159,11 @@ def rename_file(
             detail="You do not have permission to rename this file",
         )
 
-    file.filename = request.filename
-
-    db.commit()
-    db.refresh(file)
+    file = FileService.rename_file(
+        db=db,
+        file=file,
+        new_name=request.filename,
+    )
 
     return {
         "message": "File renamed successfully",
@@ -175,7 +194,7 @@ def delete_file(
             detail="You do not have permission to delete this file",
         )
 
-    if os.path.exists(file.storage_path):
+    if file.storage_path and os.path.exists(file.storage_path):
         os.remove(file.storage_path)
 
     FileService.delete_file(
@@ -211,7 +230,7 @@ def download_file(
             detail="You do not have permission to download this file",
         )
 
-    if not os.path.exists(file.storage_path):
+    if not file.storage_path or not os.path.exists(file.storage_path):
         raise HTTPException(
             status_code=404,
             detail="Physical file not found",
