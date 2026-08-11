@@ -5,7 +5,7 @@ from backend.api.v1.router import api_router
 
 from backend.core.config import settings
 from backend.core.database import Base, engine
-from backend.models import User, Folder, File
+from backend.models import User, Folder, File, AIFileIndex
 
 
 # Create database tables
