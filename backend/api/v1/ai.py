@@ -3,14 +3,14 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from backend.core.database import get_db
-from backend.core.dependencies import get_current_user
-from backend.models.user import User
-from backend.services.file_service import FileService
 from backend.ai_engine.coordinator.ai_scan_coordinator import (
     AIScanCoordinator,
 )
-
+from backend.core.database import get_db
+from backend.core.dependencies import get_current_user
+from backend.models.user import User
+from backend.schemas.ai import AIScanResponse
+from backend.services.file_service import FileService
 
 router = APIRouter(
     prefix="/ai",
@@ -26,7 +26,10 @@ def ai_status():
     }
 
 
-@router.post("/scan/{file_id}")
+@router.post(
+    "/scan/{file_id}",
+    response_model=AIScanResponse,
+)
 def scan_file_directory(
     file_id: int,
     db: Session = Depends(get_db),
