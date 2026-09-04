@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#020617">
+    <title>AI File Manager - AI Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- Header -->
+        <header class="topbar">
+
+            <button
+                class="back-button"
+                id="back-button"
+                aria-label="Back to dashboard"
+            >
+                ←
+            </button>
+
+            <div class="page-title">
+                <div class="ai-status">
+                    <span class="status-dot"></span>
+                    AI Assistant
+                </div>
+
+                <p>File management assistant</p>
+            </div>
+
+            <button
+                class="new-chat-button"
+                id="new-chat-button"
+                aria-label="Start new chat"
+            >
+                +
+            </button>
+
+        </header>
+
+        <!-- Chat -->
+        <main class="chat-page">
+
+            <section class="assistant-intro">
+
+                <div class="assistant-icon">
+                    🤖
+                </div>
+
+                <h1>How can I help?</h1>
+
+                <p>
+                    Ask me to find, organize, or understand your files.
+                </p>
+
+            </section>
+
+            <!-- Suggested actions -->
+            <section class="suggestions" id="suggestions">
+
+                <button class="suggestion" data-message="Find my largest files">
+                    <span>📊</span>
+                    <span>Find my largest files</span>
+                </button>
+
+                <button class="suggestion" data-message="Find PDF files">
+                    <span>📄</span>
+                    <span>Find PDF files</span>
+                </button>
+
+                <button class="suggestion" data-message="Show my recent files">
+                    <span>🕒</span>
+                    <span>Show recent files</span>
+                </button>
+
+                <button class="suggestion" data-message="Help me organize my files">
+                    <span>🗂️</span>
+                    <span>Organize my files</span>
+                </button>
+
+            </section>
+
+            <!-- Messages -->
+            <section
+                class="messages"
+                id="messages"
+                aria-live="polite"
+            >
+            </section>
+
+        </main>
+
+        <!-- Chat input -->
+        <footer class="chat-input-area">
+
+            <form id="chat-form" class="chat-form">
+
+                <input
+                    type="text"
+                    id="chat-input"
+                    placeholder="Ask about your files..."
+                    autocomplete="off"
+                    maxlength="500"
+                >
+
+                <button
+                    type="submit"
+                    id="send-button"
+                    aria-label="Send message"
+                >
+                    ↑
+                </button>
+
+            </form>
+
+            <p class="ai-disclaimer">
+                AI responses are currently simulated.
+            </p>
+
+        </footer>
+
+        <!-- Bottom navigation -->
+        <nav class="bottom-nav">
+
+            <button class="nav-item" data-page="dashboard">
+                <span>⌂</span>
+                <small>Home</small>
+            </button>
+
+            <button class="nav-item" data-page="files">
+                <span>📁</span>
+                <small>Files</small>
+            </button>
+
+            <button class="nav-item active" data-page="ai">
+                <span>🤖</span>
+                <small>AI</small>
+            </button>
+
+            <button class="nav-item" data-page="settings">
+                <span>⚙️</span>
+                <small>Settings</small>
+            </button>
+
+        </nav>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
