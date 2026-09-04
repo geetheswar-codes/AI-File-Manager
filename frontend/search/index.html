@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#020617">
+    <title>AI File Manager - Files</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- Header -->
+        <header class="topbar">
+
+            <button
+                class="back-button"
+                id="back-button"
+                aria-label="Back to dashboard"
+            >
+                ←
+            </button>
+
+            <div class="page-title">
+                <h1>Files</h1>
+                <p>Browse and manage</p>
+            </div>
+
+            <button
+                class="add-button"
+                id="add-button"
+                aria-label="Add file"
+            >
+                +
+            </button>
+
+        </header>
+
+        <main class="files-page">
+
+            <!-- Search -->
+            <section class="search-box">
+
+                <span class="search-icon">⌕</span>
+
+                <input
+                    type="search"
+                    id="search-input"
+                    placeholder="Search files..."
+                    autocomplete="off"
+                >
+
+                <button
+                    id="clear-search"
+                    class="clear-search"
+                    aria-label="Clear search"
+                    hidden
+                >
+                    ×
+                </button>
+
+            </section>
+
+            <!-- Current location -->
+            <section class="location">
+
+                <button class="breadcrumb active">
+                    Home
+                </button>
+
+                <span>/</span>
+
+                <span id="current-location">All Files</span>
+
+            </section>
+
+            <!-- Filters -->
+            <section class="filters">
+
+                <button class="filter active" data-filter="all">
+                    All
+                </button>
+
+                <button class="filter" data-filter="document">
+                    Documents
+                </button>
+
+                <button class="filter" data-filter="image">
+                    Images
+                </button>
+
+                <button class="filter" data-filter="other">
+                    Other
+                </button>
+
+            </section>
+
+            <!-- Folders -->
+            <section class="section">
+
+                <div class="section-title">
+                    <h2>Folders</h2>
+                </div>
+
+                <div class="folder-grid">
+
+                    <button class="folder-card">
+                        <span class="folder-icon">📁</span>
+                        <span>Documents</span>
+                        <small>24 items</small>
+                    </button>
+
+                    <button class="folder-card">
+                        <span class="folder-icon">📁</span>
+                        <span>Projects</span>
+                        <small>18 items</small>
+                    </button>
+
+                    <button class="folder-card">
+                        <span class="folder-icon">📁</span>
+                        <span>Images</span>
+                        <small>86 items</small>
+                    </button>
+
+                    <button class="folder-card">
+                        <span class="folder-icon">📁</span>
+                        <span>Downloads</span>
+                        <small>42 items</small>
+                    </button>
+
+                </div>
+
+            </section>
+
+            <!-- Files -->
+            <section class="section">
+
+                <div class="section-title">
+                    <h2 id="file-heading">Recent Files</h2>
+                    <span id="file-count">3 files</span>
+                </div>
+
+                <div class="file-list" id="file-list">
+
+                    <article class="file-item" data-type="document">
+
+                        <div class="file-icon pdf">
+                            PDF
+                        </div>
+
+                        <div class="file-info">
+                            <strong>document.pdf</strong>
+                            <span>2.4 MB • Today</span>
+                        </div>
+
+                        <button
+                            class="file-menu"
+                            aria-label="Options for document.pdf"
+                        >
+                            ⋮
+                        </button>
+
+                    </article>
+
+                    <article class="file-item" data-type="document">
+
+                        <div class="file-icon xlsx">
+                            XLS
+                        </div>
+
+                        <div class="file-info">
+                            <strong>report.xlsx</strong>
+                            <span>1.8 MB • Yesterday</span>
+                        </div>
+
+                        <button
+                            class="file-menu"
+                            aria-label="Options for report.xlsx"
+                        >
+                            ⋮
+                        </button>
+
+                    </article>
+
+                    <article class="file-item" data-type="image">
+
+                        <div class="file-icon image">
+                            IMG
+                        </div>
+
+                        <div class="file-info">
+                            <strong>project-image.jpg</strong>
+                            <span>4.1 MB • Yesterday</span>
+                        </div>
+
+                        <button
+                            class="file-menu"
+                            aria-label="Options for project-image.jpg"
+                        >
+                            ⋮
+                        </button>
+
+                    </article>
+
+                </div>
+
+                <p id="empty-message" class="empty-message" hidden>
+                    No files found.
+                </p>
+
+            </section>
+
+        </main>
+
+        <!-- Bottom navigation -->
+        <nav class="bottom-nav">
+
+            <button class="nav-item" data-page="dashboard">
+                <span>⌂</span>
+                <small>Home</small>
+            </button>
+
+            <button class="nav-item active" data-page="files">
+                <span>📁</span>
+                <small>Files</small>
+            </button>
+
+            <button class="nav-item" data-page="ai">
+                <span>🤖</span>
+                <small>AI</small>
+            </button>
+
+            <button class="nav-item" data-page="settings">
+                <span>⚙️</span>
+                <small>Settings</small>
+            </button>
+
+        </nav>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
