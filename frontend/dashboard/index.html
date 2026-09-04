@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#020617">
+    <title>AI File Manager - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-icon">AI</div>
+                <div>
+                    <h1>AI File Manager</h1>
+                    <p>Dashboard</p>
+                </div>
+            </div>
+
+            <button class="menu-button" id="menu-button" aria-label="Open menu">
+                ☰
+            </button>
+        </header>
+
+        <main class="dashboard">
+
+            <section class="welcome">
+                <p class="eyebrow">FILE MANAGEMENT</p>
+                <h2>Welcome back</h2>
+                <p>Manage your files smarter with AI.</p>
+            </section>
+
+            <section class="overview">
+
+                <article class="stat-card">
+                    <div class="stat-icon">📁</div>
+                    <div>
+                        <span>Total Files</span>
+                        <strong>1,248</strong>
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-icon">💾</div>
+                    <div>
+                        <span>Storage Used</span>
+                        <strong>62%</strong>
+                    </div>
+                </article>
+
+            </section>
+
+            <section class="storage-card">
+
+                <div class="section-heading">
+                    <div>
+                        <h3>Storage</h3>
+                        <p>Current disk usage</p>
+                    </div>
+                    <strong>62%</strong>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+
+                <div class="storage-details">
+                    <span>620 GB used</span>
+                    <span>1 TB total</span>
+                </div>
+
+            </section>
+
+            <section class="section">
+
+                <div class="section-title">
+                    <h3>Quick Actions</h3>
+                </div>
+
+                <div class="actions">
+
+                    <button class="action-card">
+                        <span class="action-icon">📁</span>
+                        <span>Files</span>
+                    </button>
+
+                    <button class="action-card">
+                        <span class="action-icon">🔍</span>
+                        <span>Search</span>
+                    </button>
+
+                    <button class="action-card">
+                        <span class="action-icon">🤖</span>
+                        <span>AI Assistant</span>
+                    </button>
+
+                    <button class="action-card">
+                        <span class="action-icon">⚙️</span>
+                        <span>Settings</span>
+                    </button>
+
+                </div>
+
+            </section>
+
+            <section class="section">
+
+                <div class="section-title">
+                    <h3>Recent Files</h3>
+                    <button id="view-all">View all</button>
+                </div>
+
+                <div class="file-list">
+
+                    <article class="file-item">
+                        <div class="file-icon pdf">PDF</div>
+                        <div class="file-info">
+                            <strong>document.pdf</strong>
+                            <span>2.4 MB • Today</span>
+                        </div>
+                        <button class="file-menu" aria-label="File options">⋮</button>
+                    </article>
+
+                    <article class="file-item">
+                        <div class="file-icon xlsx">XLS</div>
+                        <div class="file-info">
+                            <strong>report.xlsx</strong>
+                            <span>1.8 MB • Yesterday</span>
+                        </div>
+                        <button class="file-menu" aria-label="File options">⋮</button>
+                    </article>
+
+                    <article class="file-item">
+                        <div class="file-icon image">IMG</div>
+                        <div class="file-info">
+                            <strong>project-image.jpg</strong>
+                            <span>4.1 MB • Yesterday</span>
+                        </div>
+                        <button class="file-menu" aria-label="File options">⋮</button>
+                    </article>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <nav class="bottom-nav">
+
+            <button class="nav-item active">
+                <span>⌂</span>
+                <small>Home</small>
+            </button>
+
+            <button class="nav-item">
+                <span>📁</span>
+                <small>Files</small>
+            </button>
+
+            <button class="nav-item">
+                <span>🤖</span>
+                <small>AI</small>
+            </button>
+
+            <button class="nav-item">
+                <span>⚙️</span>
+                <small>Settings</small>
+            </button>
+
+        </nav>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
