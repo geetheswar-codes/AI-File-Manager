@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#020617">
+    <title>AI File Manager - Settings</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-icon">AI</div>
+                <div>
+                    <h1>AI File Manager</h1>
+                    <p>Settings</p>
+                </div>
+            </div>
+
+            <button class="back-button" id="back-button" aria-label="Back to dashboard">
+                ←
+            </button>
+        </header>
+
+        <main class="settings-page">
+
+            <section class="page-intro">
+                <p class="eyebrow">PREFERENCES</p>
+                <h2>Settings</h2>
+                <p>Customize your AI File Manager experience.</p>
+            </section>
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+                    <h3>Account</h3>
+                </div>
+
+                <article class="setting-card profile-card">
+                    <div class="profile-avatar">U</div>
+
+                    <div class="setting-info">
+                        <strong>User Account</strong>
+                        <span>Manage your account information</span>
+                    </div>
+
+                    <span class="chevron">›</span>
+                </article>
+
+            </section>
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+                    <h3>Appearance</h3>
+                </div>
+
+                <article class="setting-card">
+                    <div class="setting-icon">🌙</div>
+
+                    <div class="setting-info">
+                        <strong>Dark Mode</strong>
+                        <span>Use the dark interface</span>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode" checked>
+                        <span class="slider"></span>
+                    </label>
+                </article>
+
+            </section>
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+                    <h3>File Management</h3>
+                </div>
+
+                <article class="setting-card">
+                    <div class="setting-icon">📂</div>
+
+                    <div class="setting-info">
+                        <strong>Default File View</strong>
+                        <span>Choose how files are displayed</span>
+                    </div>
+
+                    <button class="value-button" id="view-setting">
+                        List
+                    </button>
+                </article>
+
+                <article class="setting-card">
+                    <div class="setting-icon">🔄</div>
+
+                    <div class="setting-info">
+                        <strong>Auto Refresh</strong>
+                        <span>Refresh file information automatically</span>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="auto-refresh" checked>
+                        <span class="slider"></span>
+                    </label>
+                </article>
+
+            </section>
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+                    <h3>AI Assistant</h3>
+                </div>
+
+                <article class="setting-card">
+                    <div class="setting-icon">🤖</div>
+
+                    <div class="setting-info">
+                        <strong>AI Suggestions</strong>
+                        <span>Allow AI to suggest file actions</span>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="ai-suggestions" checked>
+                        <span class="slider"></span>
+                    </label>
+                </article>
+
+                <article class="setting-card">
+                    <div class="setting-icon">🧠</div>
+
+                    <div class="setting-info">
+                        <strong>Smart Organization</strong>
+                        <span>Let AI recommend file organization</span>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="smart-organization" checked>
+                        <span class="slider"></span>
+                    </label>
+                </article>
+
+            </section>
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+                    <h3>Notifications</h3>
+                </div>
+
+                <article class="setting-card">
+                    <div class="setting-icon">🔔</div>
+
+                    <div class="setting-info">
+                        <strong>Notifications</strong>
+                        <span>Receive important system notifications</span>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="notifications" checked>
+                        <span class="slider"></span>
+                    </label>
+                </article>
+
+            </section>
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+                    <h3>Security</h3>
+                </div>
+
+                <article class="setting-card clickable" id="security-setting">
+                    <div class="setting-icon">🔐</div>
+
+                    <div class="setting-info">
+                        <strong>Security & Privacy</strong>
+                        <span>Manage security preferences</span>
+                    </div>
+
+                    <span class="chevron">›</span>
+                </article>
+
+            </section>
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+                    <h3>About</h3>
+                </div>
+
+                <article class="setting-card">
+                    <div class="setting-icon">ℹ️</div>
+
+                    <div class="setting-info">
+                        <strong>AI File Manager</strong>
+                        <span>Frontend version 1.0</span>
+                    </div>
+                </article>
+
+            </section>
+
+        </main>
+
+        <nav class="bottom-nav">
+
+            <button class="nav-item" data-page="dashboard">
+                <span>⌂</span>
+                <small>Home</small>
+            </button>
+
+            <button class="nav-item" data-page="files">
+                <span>📁</span>
+                <small>Files</small>
+            </button>
+
+            <button class="nav-item" data-page="ai">
+                <span>🤖</span>
+                <small>AI</small>
+            </button>
+
+            <button class="nav-item active" data-page="settings">
+                <span>⚙️</span>
+                <small>Settings</small>
+            </button>
+
+        </nav>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

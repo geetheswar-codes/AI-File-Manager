@@ -5,37 +5,81 @@ const actionCards = document.querySelectorAll(".action-card");
 const navItems = document.querySelectorAll(".nav-item");
 const fileMenus = document.querySelectorAll(".file-menu");
 
+/* Top menu */
+
 menuButton.addEventListener("click", () => {
-    alert("Menu will be connected to navigation soon.");
+    alert("Navigation menu will be expanded here.");
 });
 
+/* Recent files */
+
 viewAllButton.addEventListener("click", () => {
-    alert("File manager will be connected here soon.");
+    window.location.href = "../search/index.html";
 });
+
+/* Quick actions */
 
 actionCards.forEach((card) => {
     card.addEventListener("click", () => {
         const action = card.textContent.trim();
 
-        alert(`${action} section will be connected soon.`);
-    });
-});
+        if (action === "Files") {
+            window.location.href = "../search/index.html";
+            return;
+        }
 
-navItems.forEach((item) => {
-    item.addEventListener("click", () => {
-        navItems.forEach((nav) => nav.classList.remove("active"));
-        item.classList.add("active");
+        if (action === "Search") {
+            window.location.href = "../search/index.html";
+            return;
+        }
 
-        const section = item.querySelector("small").textContent;
+        if (action === "AI Assistant") {
+            window.location.href = "../ai/index.html";
+            return;
+        }
 
-        if (section !== "Home") {
-            alert(`${section} section will be connected soon.`);
+        if (action === "Settings") {
+            window.location.href = "../settings/index.html";
         }
     });
 });
 
+/* Bottom navigation */
+
+navItems.forEach((item) => {
+    item.addEventListener("click", () => {
+        const section = item.querySelector("small").textContent;
+
+        if (section === "Home") {
+            window.location.href = "../dashboard/index.html";
+            return;
+        }
+
+        if (section === "Files") {
+            window.location.href = "../search/index.html";
+            return;
+        }
+
+        if (section === "AI") {
+            window.location.href = "../ai/index.html";
+            return;
+        }
+
+        if (section === "Settings") {
+            window.location.href = "../settings/index.html";
+        }
+    });
+});
+
+/* File options */
+
 fileMenus.forEach((menu) => {
     menu.addEventListener("click", () => {
-        alert("File options will be connected soon.");
+        const fileName = menu
+            .closest(".file-item")
+            .querySelector(".file-info strong")
+            .textContent;
+
+        alert(`Options for ${fileName} will be connected later.`);
     });
 });

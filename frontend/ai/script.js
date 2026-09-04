@@ -187,7 +187,7 @@ navItems.forEach((item) => {
         }
 
         if (page === "settings") {
-            alert("Settings will be connected soon.");
+            window.location.href = "../settings/index.html";
         }
     });
 });
