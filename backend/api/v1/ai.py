@@ -11,6 +11,10 @@ from backend.core.dependencies import get_current_user
 from backend.models.user import User
 from backend.schemas.ai import AIScanResponse
 from backend.services.file_service import FileService
+from backend.services.ai.ai_storage_scan_service import (
+    AIStorageScanService,
+)
+
 
 router = APIRouter(
     prefix="/ai",
@@ -88,3 +92,44 @@ def scan_file_directory(
     return coordinator.scan_and_analyze(
         root_path=root_path,
     )
+
+@router.post(
+    "/scan",
+    response_model=AIScanResponse,
+)
+def scan_storage(
+    root_path: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Scan an authorized storage location with the AI engine.
+    """
+
+    project_storage_root = Path("storage/ai_scan").resolve()
+
+    service = AIStorageScanService(
+        db=db,
+        allowed_roots=[str(project_storage_root)],
+    )
+
+    try:
+        return service.scan(root_path)
+
+    except PermissionError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(exc),
+        )
+
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        )
+
+    except NotADirectoryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
