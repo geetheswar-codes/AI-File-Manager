@@ -13,7 +13,8 @@ from backend.ai_engine.coordinator.ai_scan_coordinator import (
 def test_coordinator_detects_duplicate_files(tmp_path):
     """
     Verify that the complete AI scan pipeline detects
-    files with identical content.
+    duplicate files, recommends reviewing them, and
+    creates the corresponding AI decision.
     """
 
     file_one = Path(tmp_path) / "file_one.txt"
@@ -49,6 +50,7 @@ def test_coordinator_detects_duplicate_files(tmp_path):
             root_path=str(tmp_path),
         )
 
+        # Verify duplicate detection.
         duplicates = result["duplicates"]
 
         assert len(duplicates) == 1
@@ -61,6 +63,40 @@ def test_coordinator_detects_duplicate_files(tmp_path):
         assert str(file_two) in duplicate_group["files"]
 
         assert duplicate_group["content_hash"]
+
+        # Verify duplicate recommendation.
+        recommendations = result["recommendations"]
+
+        duplicate_recommendations = [
+            recommendation
+            for recommendation in recommendations
+            if recommendation["action"] == "review_duplicates"
+        ]
+
+        assert len(duplicate_recommendations) == 1
+
+        recommendation = duplicate_recommendations[0]
+
+        assert recommendation["confidence"] == 0.98
+        assert recommendation["risk_level"] == "LOW"
+        assert recommendation["requires_confirmation"] is True
+
+        # Verify duplicate decision.
+        decisions = result["decisions"]
+
+        duplicate_decisions = [
+            decision
+            for decision in decisions
+            if decision["action"] == "review_duplicates"
+        ]
+
+        assert len(duplicate_decisions) == 1
+
+        decision = duplicate_decisions[0]
+
+        assert decision["confidence"] == 0.98
+        assert decision["risk_level"] == "LOW"
+        assert decision["requires_confirmation"] is True
 
     finally:
         db.close()

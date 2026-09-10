@@ -90,3 +90,41 @@ def test_multiple_recommendations_can_be_generated():
     assert "organize_images" in actions
     assert "review_executables" in actions
     assert len(result) == 3
+
+    
+def test_recommends_review_for_duplicates():
+    engine = AIRecommendationEngine()
+
+    analysis_result = {
+        "total_files": 2,
+        "categories": {},
+        "duplicates": [
+            {
+                "content_hash": "abc123",
+                "files": [
+                    "/storage/file1.txt",
+                    "/storage/file2.txt",
+                ],
+                "count": 2,
+            }
+        ],
+    }
+
+    recommendations = engine.generate_recommendations(
+        analysis_result
+    )
+
+    duplicate_recommendations = [
+        recommendation
+        for recommendation in recommendations
+        if recommendation.action == "review_duplicates"
+    ]
+
+    assert len(duplicate_recommendations) == 1
+
+    recommendation = duplicate_recommendations[0]
+
+    assert recommendation.confidence == 0.98
+    assert recommendation.risk_level == "LOW"
+    assert recommendation.requires_confirmation is True
+    assert "2 duplicate file(s)" in recommendation.reason

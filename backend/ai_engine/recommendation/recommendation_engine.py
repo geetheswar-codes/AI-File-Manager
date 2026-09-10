@@ -53,8 +53,9 @@ class AIRecommendationEngine:
 
         total_files = analysis_result.get("total_files", 0)
         categories = analysis_result.get("categories", {})
+        duplicates = analysis_result.get("duplicates", [])
 
-        if total_files == 0:
+        if total_files == 0 and not duplicates:
             return recommendations
 
         # Recommendation: organize documents
@@ -104,6 +105,30 @@ class AIRecommendationEngine:
                     ),
                     confidence=0.95,
                     risk_level="HIGH",
+                    requires_confirmation=True,
+                )
+            )
+
+        # Recommendation: review duplicate files
+        duplicate_file_count = sum(
+            group.get("count", 0)
+            for group in duplicates
+        )
+
+        if duplicate_file_count > 0:
+            duplicate_group_count = len(duplicates)
+
+            recommendations.append(
+                AIRecommendation(
+                    action="review_duplicates",
+                    reason=(
+                        f"{duplicate_file_count} duplicate file(s) "
+                        f"were found across {duplicate_group_count} "
+                        "duplicate group(s). "
+                        "Review them to reduce unnecessary storage."
+                    ),
+                    confidence=0.98,
+                    risk_level="LOW",
                     requires_confirmation=True,
                 )
             )

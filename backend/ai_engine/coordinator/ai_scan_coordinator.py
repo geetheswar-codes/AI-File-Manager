@@ -13,11 +13,13 @@ Pipeline:
         ↓
     FileIntelligenceEngine
         ↓
+    Update Index
+        ↓
+    DuplicateFileDetector
+        ↓
     AIRecommendationEngine
         ↓
     AIDecisionEngine
-        ↓
-    DuplicateFileDetector
 
 Important Principles:
     - Never modify user files
@@ -100,14 +102,43 @@ class AIScanCoordinator:
             )
         )
 
-        # Step 4: Generate recommendations from analyzed files.
+        # Step 4: Update the persistent index.
+        indexed_count = (
+            self.index_service.update_index_batch(
+                files_to_analyze
+            )
+        )
+
+        # Step 5: Detect duplicates from the complete index.
+        indexed_files = (
+            self.index_service.get_all_indexed_files()
+        )
+
+        duplicate_groups = (
+            self.duplicate_detector.find_duplicates(
+                [
+                    {
+                        "path": file.path,
+                        "content_hash": file.content_hash,
+                    }
+                    for file in indexed_files
+                ]
+            )
+        )
+
+        # Make duplicate information available to the
+        # recommendation engine.
+        analysis_result["duplicates"] = duplicate_groups
+
+        # Step 6: Generate recommendations after duplicate
+        # detection so duplicate recommendations are included.
         recommendations = (
             self.recommendation_engine.generate_recommendations(
                 analysis_result
             )
         )
 
-        # Step 5: Convert recommendations into AI decisions.
+        # Step 7: Convert recommendations into AI decisions.
         decisions = []
 
         for recommendation in recommendations:
@@ -130,30 +161,6 @@ class AIScanCoordinator:
                     "decision_reason": decision.reason,
                 }
             )
-
-        # Step 6: Update the persistent index.
-        indexed_count = (
-            self.index_service.update_index_batch(
-                files_to_analyze
-            )
-        )
-
-        # Step 7: Detect duplicates from the complete index.
-        indexed_files = (
-            self.index_service.get_all_indexed_files()
-        )
-
-        duplicate_groups = (
-            self.duplicate_detector.find_duplicates(
-                [
-                    {
-                        "path": file.path,
-                        "content_hash": file.content_hash,
-                    }
-                    for file in indexed_files
-                ]
-            )
-        )
 
         return {
             "scanner": {
