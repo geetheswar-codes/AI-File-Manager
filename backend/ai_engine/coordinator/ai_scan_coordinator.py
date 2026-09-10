@@ -16,12 +16,15 @@ Pipeline:
     AIRecommendationEngine
         ↓
     AIDecisionEngine
+        ↓
+    DuplicateFileDetector
 
 Important Principles:
     - Never modify user files
     - Skip unchanged files whenever possible
     - Keep database/index logic separate from scanning
     - AI recommends actions; user remains in control
+    - Duplicate detection is read-only
 """
 
 from typing import Any, Dict
@@ -30,6 +33,9 @@ from sqlalchemy.orm import Session
 
 from backend.ai_engine.decision.decision_engine import (
     AIDecisionEngine,
+)
+from backend.ai_engine.duplicates.duplicate_detector import (
+    DuplicateFileDetector,
 )
 from backend.ai_engine.index.index_service import (
     AIFileIndexService,
@@ -58,6 +64,7 @@ class AIScanCoordinator:
         self.intelligence = FileIntelligenceEngine()
         self.recommendation_engine = AIRecommendationEngine()
         self.decision_engine = AIDecisionEngine()
+        self.duplicate_detector = DuplicateFileDetector()
 
     def scan_and_analyze(
         self,
@@ -131,6 +138,23 @@ class AIScanCoordinator:
             )
         )
 
+        # Step 7: Detect duplicates from the complete index.
+        indexed_files = (
+            self.index_service.get_all_indexed_files()
+        )
+
+        duplicate_groups = (
+            self.duplicate_detector.find_duplicates(
+                [
+                    {
+                        "path": file.path,
+                        "content_hash": file.content_hash,
+                    }
+                    for file in indexed_files
+                ]
+            )
+        )
+
         return {
             "scanner": {
                 "files_found": len(scanned_files),
@@ -171,4 +195,5 @@ class AIScanCoordinator:
                 for recommendation in recommendations
             ],
             "decisions": decisions,
+            "duplicates": duplicate_groups,
         }

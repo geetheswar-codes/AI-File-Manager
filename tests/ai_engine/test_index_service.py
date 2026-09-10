@@ -18,12 +18,15 @@ def create_test_db():
     return Session()
 
 
-def test_new_file_requires_analysis():
+def test_new_file_requires_analysis(tmp_path):
     db = create_test_db()
     service = AIFileIndexService(db)
 
+    file_path = tmp_path / "test.pdf"
+    file_path.write_bytes(b"test content")
+
     metadata = {
-        "path": "/tmp/test.pdf",
+        "path": str(file_path),
         "size": 1000,
         "modified_time": 123456.0,
         "extension": ".pdf",
@@ -35,12 +38,15 @@ def test_new_file_requires_analysis():
     db.close()
 
 
-def test_indexed_unchanged_file_is_skipped():
+def test_indexed_unchanged_file_is_skipped(tmp_path):
     db = create_test_db()
     service = AIFileIndexService(db)
 
+    file_path = tmp_path / "test.pdf"
+    file_path.write_bytes(b"test content")
+
     metadata = {
-        "path": "/tmp/test.pdf",
+        "path": str(file_path),
         "size": 1000,
         "modified_time": 123456.0,
         "extension": ".pdf",
@@ -55,12 +61,15 @@ def test_indexed_unchanged_file_is_skipped():
     db.close()
 
 
-def test_changed_file_requires_analysis():
+def test_changed_file_requires_analysis(tmp_path):
     db = create_test_db()
     service = AIFileIndexService(db)
 
+    file_path = tmp_path / "test.pdf"
+    file_path.write_bytes(b"test content")
+
     original = {
-        "path": "/tmp/test.pdf",
+        "path": str(file_path),
         "size": 1000,
         "modified_time": 123456.0,
         "extension": ".pdf",
@@ -69,7 +78,7 @@ def test_changed_file_requires_analysis():
     service.update_index(original)
 
     changed = {
-        "path": "/tmp/test.pdf",
+        "path": str(file_path),
         "size": 2000,
         "modified_time": 123456.0,
         "extension": ".pdf",
@@ -81,12 +90,15 @@ def test_changed_file_requires_analysis():
     db.close()
 
 
-def test_changed_extension_requires_analysis():
+def test_changed_extension_requires_analysis(tmp_path):
     db = create_test_db()
     service = AIFileIndexService(db)
 
+    file_path = tmp_path / "test.file"
+    file_path.write_bytes(b"test content")
+
     original = {
-        "path": "/tmp/test.file",
+        "path": str(file_path),
         "size": 1000,
         "modified_time": 123456.0,
         "extension": ".txt",
@@ -95,7 +107,7 @@ def test_changed_extension_requires_analysis():
     service.update_index(original)
 
     changed = {
-        "path": "/tmp/test.file",
+        "path": str(file_path),
         "size": 1000,
         "modified_time": 123456.0,
         "extension": ".pdf",
@@ -107,12 +119,18 @@ def test_changed_extension_requires_analysis():
     db.close()
 
 
-def test_filter_changed_files_returns_only_changed_files():
+def test_filter_changed_files_returns_only_changed_files(tmp_path):
     db = create_test_db()
     service = AIFileIndexService(db)
 
+    existing_path = tmp_path / "existing.pdf"
+    existing_path.write_bytes(b"existing content")
+
+    new_path = tmp_path / "new.pdf"
+    new_path.write_bytes(b"new content")
+
     existing = {
-        "path": "/tmp/existing.pdf",
+        "path": str(existing_path),
         "size": 1000,
         "modified_time": 123456.0,
         "extension": ".pdf",
@@ -123,7 +141,7 @@ def test_filter_changed_files_returns_only_changed_files():
     files = [
         existing,
         {
-            "path": "/tmp/new.pdf",
+            "path": str(new_path),
             "size": 500,
             "modified_time": 123456.0,
             "extension": ".pdf",
@@ -133,6 +151,6 @@ def test_filter_changed_files_returns_only_changed_files():
     result = service.filter_changed_files(files)
 
     assert len(result) == 1
-    assert result[0]["path"] == "/tmp/new.pdf"
+    assert result[0]["path"] == str(new_path)
 
     db.close()

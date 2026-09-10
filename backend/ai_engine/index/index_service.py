@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session
 
 from backend.models.ai_file_index import AIFileIndex
+from backend.ai_engine.hashing.file_hasher import FileHasher
 
 
 class AIFileIndexService:
@@ -45,6 +46,13 @@ class AIFileIndexService:
             .filter(AIFileIndex.path == path)
             .first()
         )
+
+    def get_all_indexed_files(self) -> List[AIFileIndex]:
+        """
+        Retrieve all files currently stored in the AI index.
+        """
+
+        return self.db.query(AIFileIndex).all()
 
     def is_new_file(self, metadata: Dict[str, Any]) -> bool:
         """
@@ -115,7 +123,10 @@ class AIFileIndexService:
         metadata: Dict[str, Any],
     ) -> AIFileIndex:
         """
-        Insert or update a file's lightweight index record.
+        Insert or update a file's AI index record.
+
+        SHA-256 hashing is performed for files that are being
+        indexed or updated.
 
         This method modifies only the AI database index.
         It never modifies the actual user file.
@@ -128,6 +139,8 @@ class AIFileIndexService:
 
         indexed_file = self.get_by_path(path)
 
+        content_hash = FileHasher.sha256(path)
+
         if indexed_file is None:
             indexed_file = AIFileIndex(
                 path=path,
@@ -135,6 +148,7 @@ class AIFileIndexService:
                 modified_time=metadata.get("modified_time"),
                 file_type=metadata.get("extension"),
                 last_scanned_at=datetime.utcnow(),
+                content_hash=content_hash,
             )
 
             self.db.add(indexed_file)
@@ -146,6 +160,7 @@ class AIFileIndexService:
             )
             indexed_file.file_type = metadata.get("extension")
             indexed_file.last_scanned_at = datetime.utcnow()
+            indexed_file.content_hash = content_hash
 
         self.db.commit()
         self.db.refresh(indexed_file)
