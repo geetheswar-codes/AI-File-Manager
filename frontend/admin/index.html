@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI File Manager - Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage your AI File Manager</p>
+        </div>
+
+        <button id="logoutBtn">Logout</button>
+    </header>
+
+    <main class="container">
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <span class="icon">📁</span>
+                <div>
+                    <p>Total Files</p>
+                    <h2 id="fileCount">1,248</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <span class="icon">👤</span>
+                <div>
+                    <p>Users</p>
+                    <h2 id="userCount">24</h2>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <span class="icon">💾</span>
+                <div>
+                    <p>Storage Used</p>
+                    <h2>4.8 GB</h2>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>System Overview</h2>
+                    <p>Current application status</p>
+                </div>
+            </div>
+
+            <div class="status-list">
+
+                <div class="status-item">
+                    <span>Frontend</span>
+                    <strong class="online">Online</strong>
+                </div>
+
+                <div class="status-item">
+                    <span>AI Assistant</span>
+                    <strong class="online">Ready</strong>
+                </div>
+
+                <div class="status-item">
+                    <span>Storage</span>
+                    <strong class="online">Available</strong>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Quick Actions</h2>
+                    <p>Manage the application</p>
+                </div>
+            </div>
+
+            <div class="actions">
+
+                <button class="action-btn" id="manageFiles">
+                    📁
+                    <span>Manage Files</span>
+                </button>
+
+                <button class="action-btn" id="manageUsers">
+                    👤
+                    <span>Manage Users</span>
+                </button>
+
+                <button class="action-btn" id="openSettings">
+                    ⚙️
+                    <span>Settings</span>
+                </button>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
