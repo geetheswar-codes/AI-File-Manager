@@ -378,3 +378,75 @@ button {
         padding: 14px 16px;
     }
 }
+
+/* Light Mode */
+
+body.light-mode {
+    background:
+        radial-gradient(circle at top, #e2e8f0 0%, #f8fafc 55%);
+    color: #1e293b;
+}
+
+body.light-mode .topbar {
+    background: rgba(248, 250, 252, 0.94);
+    border-bottom-color: #cbd5e1;
+}
+
+body.light-mode .brand h1 {
+    color: #0f172a;
+}
+
+body.light-mode .brand p {
+    color: #64748b;
+}
+
+body.light-mode .back-button {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+body.light-mode .page-intro h2,
+body.light-mode .section-heading h3 {
+    color: #0f172a;
+}
+
+body.light-mode .page-intro > p:last-child {
+    color: #64748b;
+}
+
+body.light-mode .setting-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #cbd5e1;
+}
+
+body.light-mode .setting-info strong {
+    color: #1e293b;
+}
+
+body.light-mode .setting-info span {
+    color: #64748b;
+}
+
+body.light-mode .setting-icon {
+    background: #dbeafe;
+}
+
+body.light-mode .value-button {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #2563eb;
+}
+
+body.light-mode .bottom-nav {
+    background: rgba(248, 250, 252, 0.96);
+    border-top-color: #cbd5e1;
+}
+
+body.light-mode .nav-item {
+    color: #64748b;
+}
+
+body.light-mode .nav-item.active {
+    color: #2563eb;
+}

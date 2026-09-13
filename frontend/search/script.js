@@ -43,12 +43,47 @@ function updateFiles() {
 
     clearSearch.hidden = query.length === 0;
 
-    if (query) {
-        fileHeading.textContent = "Search Results";
+    fileHeading.textContent = query ? "Search Results" : "Recent Files";
+}
+
+/* File View */
+
+function applyFileView() {
+    const view = localStorage.getItem("fileView") || "List";
+    const isGrid = view === "Grid";
+
+    fileList.classList.toggle("grid-view", isGrid);
+
+    if (isGrid) {
+        fileList.style.display = "grid";
+        fileList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+        fileList.style.gap = "12px";
+
+        document.querySelectorAll(".file-item").forEach((file) => {
+            file.style.display = "flex";
+            file.style.flexDirection = "column";
+            file.style.alignItems = "flex-start";
+            file.style.justifyContent = "center";
+            file.style.position = "relative";
+            file.style.minHeight = "150px";
+        });
     } else {
-        fileHeading.textContent = "Recent Files";
+        fileList.style.display = "flex";
+        fileList.style.flexDirection = "column";
+        fileList.style.gap = "9px";
+
+        document.querySelectorAll(".file-item").forEach((file) => {
+            file.style.display = "flex";
+            file.style.flexDirection = "row";
+            file.style.alignItems = "center";
+            file.style.justifyContent = "initial";
+            file.style.position = "static";
+            file.style.minHeight = "68px";
+        });
     }
 }
+
+applyFileView();
 
 searchInput.addEventListener("input", updateFiles);
 

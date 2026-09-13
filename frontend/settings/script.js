@@ -1,8 +1,25 @@
 const backButton = document.getElementById("back-button");
 const viewSetting = document.getElementById("view-setting");
 const securitySetting = document.getElementById("security-setting");
+const darkMode = document.getElementById("dark-mode");
 
 const navItems = document.querySelectorAll(".nav-item");
+
+/* Dark Mode */
+
+function applyTheme() {
+    const isDark = localStorage.getItem("darkMode") !== "false";
+
+    document.body.classList.toggle("light-mode", !isDark);
+    darkMode.checked = isDark;
+}
+
+darkMode.addEventListener("change", () => {
+    localStorage.setItem("darkMode", darkMode.checked);
+    applyTheme();
+});
+
+applyTheme();
 
 /* Back to dashboard */
 
@@ -12,13 +29,20 @@ backButton.addEventListener("click", () => {
 
 /* Default file view */
 
+function applyFileView() {
+    const view = localStorage.getItem("fileView") || "List";
+    viewSetting.textContent = view;
+}
+
 viewSetting.addEventListener("click", () => {
-    if (viewSetting.textContent.trim() === "List") {
-        viewSetting.textContent = "Grid";
-    } else {
-        viewSetting.textContent = "List";
-    }
+    const currentView = localStorage.getItem("fileView") || "List";
+    const newView = currentView === "List" ? "Grid" : "List";
+
+    localStorage.setItem("fileView", newView);
+    applyFileView();
 });
+
+applyFileView();
 
 /* Account */
 
@@ -59,18 +83,20 @@ navItems.forEach((item) => {
     });
 });
 
-/* Settings feedback */
+/* Other settings */
 
 const settingInputs = document.querySelectorAll(
-    '.switch input[type="checkbox"]'
+    '.switch input[type="checkbox"]:not(#dark-mode)'
 );
 
 settingInputs.forEach((input) => {
-    input.addEventListener("change", () => {
-        const settingName = input.id;
+    const savedValue = localStorage.getItem(input.id);
 
-        console.log(
-            `${settingName}: ${input.checked ? "enabled" : "disabled"}`
-        );
+    if (savedValue !== null) {
+        input.checked = savedValue === "true";
+    }
+
+    input.addEventListener("change", () => {
+        localStorage.setItem(input.id, input.checked);
     });
 });
