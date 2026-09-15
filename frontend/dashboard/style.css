@@ -470,3 +470,140 @@ button {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+/* =========================================================
+   Responsive Dashboard Layout
+   ========================================================= */
+
+/* Tablet */
+
+@media (min-width: 600px) {
+    .dashboard {
+        max-width: 1100px;
+        padding: 30px 24px;
+    }
+
+    .overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .actions {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .action-card {
+        min-height: 110px;
+    }
+}
+
+/* Laptop */
+
+@media (min-width: 700px) {
+    .app {
+        padding-bottom: 0;
+    }
+
+    .menu-button {
+        display: none !important;
+    }
+
+    .dashboard {
+        width: auto;
+        max-width: none;
+        margin-left: 238px;
+        margin-right: 24px;
+        padding: 32px;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        left: 24px;
+        right: auto;
+        top: 96px;
+        bottom: auto;
+
+        width: 190px;
+        height: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        border: 1px solid #1e293b;
+        border-radius: 16px;
+
+        overflow: hidden;
+    }
+
+    .nav-item {
+        min-height: 58px;
+
+        flex-direction: row;
+        justify-content: flex-start;
+
+        padding: 0 18px;
+
+        gap: 12px;
+    }
+
+    .nav-item span {
+        width: 24px;
+        text-align: center;
+    }
+
+    .nav-item small {
+        font-size: 12px;
+    }
+
+    .overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .actions {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .recent-files {
+        width: 100%;
+    }
+}
+
+/* Large desktop */
+
+@media (min-width: 1200px) {
+    .dashboard {
+        margin-left: 250px;
+        margin-right: 40px;
+        padding: 36px 40px;
+    }
+
+    .bottom-nav {
+        left: 30px;
+        width: 200px;
+    }
+
+    .overview {
+        gap: 16px;
+    }
+
+    .stat-card {
+        padding: 20px;
+    }
+
+    .storage-card {
+        padding: 22px;
+    }
+
+    .file-list {
+        gap: 12px;
+    }
+}
+
+/* Very large screens */
+
+@media (min-width: 1500px) {
+    .dashboard {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+}
+
