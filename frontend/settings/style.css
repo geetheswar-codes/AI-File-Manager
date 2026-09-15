@@ -450,3 +450,132 @@ body.light-mode .nav-item {
 body.light-mode .nav-item.active {
     color: #2563eb;
 }
+
+/* Responsive Settings Layout */
+
+@media (min-width: 600px) {
+    .settings-page {
+        max-width: 1000px;
+        padding: 32px 24px;
+    }
+
+    .page-intro h2 {
+        font-size: 30px;
+    }
+
+    .setting-card {
+        min-height: 72px;
+        padding: 14px 16px;
+    }
+}
+
+@media (min-width: 700px) {
+    .app {
+        padding-bottom: 0;
+    }
+
+    .settings-page {
+        width: auto;
+        max-width: none;
+        margin: 0 24px 0 238px;
+        padding: 36px 32px 50px;
+    }
+
+    /* Desktop sidebar */
+
+    .bottom-nav {
+        left: 24px;
+        right: auto;
+        top: 96px;
+        bottom: auto;
+
+        width: 190px;
+        height: auto;
+        min-height: 268px;
+
+        display: flex;
+        flex-direction: column;
+
+        padding: 12px;
+
+        border: 1px solid #1e293b;
+        border-radius: 15px;
+
+        background: rgba(2, 6, 23, 0.94);
+    }
+
+    .nav-item {
+        min-height: 54px;
+
+        flex-direction: row;
+        justify-content: flex-start;
+
+        gap: 13px;
+        padding: 0 12px;
+
+        border-radius: 10px;
+    }
+
+    .nav-item span {
+        width: 24px;
+        font-size: 19px;
+        text-align: center;
+    }
+
+    .nav-item small {
+        font-size: 12px;
+    }
+
+    .nav-item.active {
+        background: rgba(37, 99, 235, 0.12);
+    }
+
+    .settings-section {
+        max-width: 1000px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .settings-page {
+        margin-left: 250px;
+        margin-right: 40px;
+        padding: 42px 40px 60px;
+    }
+
+    .bottom-nav {
+        left: 30px;
+        width: 200px;
+    }
+
+    .settings-section {
+        max-width: 1050px;
+    }
+
+    .setting-card {
+        padding: 15px 18px;
+    }
+}
+
+@media (min-width: 1500px) {
+    .settings-page {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+
+    .settings-section {
+        max-width: 1150px;
+    }
+}
+
+/* Desktop sidebar - Light Mode */
+
+@media (min-width: 700px) {
+    body.light-mode .bottom-nav {
+        background: rgba(248, 250, 252, 0.96);
+        border-color: #cbd5e1;
+    }
+
+    body.light-mode .nav-item.active {
+        background: rgba(37, 99, 235, 0.08);
+    }
+}
