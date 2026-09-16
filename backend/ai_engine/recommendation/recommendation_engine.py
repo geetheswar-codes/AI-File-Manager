@@ -17,6 +17,7 @@ Important Principles:
 """
 
 from dataclasses import dataclass
+from pathlib import PurePath
 from typing import Any, Dict, List
 
 
@@ -41,6 +42,10 @@ class AIRecommendationEngine:
     It never performs file operations.
     """
 
+    LARGE_FILE_THRESHOLD = 500 * 1000 * 1000
+    ORGANIZATION_THRESHOLD = 10
+    SCATTERED_FOLDER_THRESHOLD = 3
+
     def generate_recommendations(
         self,
         analysis_result: Dict[str, Any],
@@ -49,25 +54,62 @@ class AIRecommendationEngine:
         Generate recommendations from analyzed file data.
         """
 
-        recommendations = []
+        recommendations: List[AIRecommendation] = []
 
         total_files = analysis_result.get("total_files", 0)
         categories = analysis_result.get("categories", {})
         duplicates = analysis_result.get("duplicates", [])
+        files = analysis_result.get("files", [])
 
-        if total_files == 0 and not duplicates:
+        if total_files == 0 and not duplicates and not files:
             return recommendations
 
-        # Recommendation: organize documents
+        self._add_category_recommendations(
+            recommendations=recommendations,
+            categories=categories,
+        )
+
+        self._add_scattered_file_recommendations(
+            recommendations=recommendations,
+            files=files,
+        )
+
+        self._add_large_file_recommendation(
+            recommendations=recommendations,
+            files=files,
+        )
+
+        self._add_executable_recommendation(
+            recommendations=recommendations,
+            categories=categories,
+        )
+
+        self._add_duplicate_recommendation(
+            recommendations=recommendations,
+            duplicates=duplicates,
+        )
+
+        return recommendations
+
+    def _add_category_recommendations(
+        self,
+        recommendations: List[AIRecommendation],
+        categories: Dict[str, int],
+    ) -> None:
+        """
+        Recommend organization for categories with many files.
+        """
+
         document_count = categories.get("document", 0)
 
-        if document_count >= 10:
+        if document_count >= self.ORGANIZATION_THRESHOLD:
             recommendations.append(
                 AIRecommendation(
                     action="organize_documents",
                     reason=(
                         f"{document_count} document files were found. "
-                        "They could be organized into a dedicated document structure."
+                        "They could be organized into a dedicated "
+                        "document structure."
                     ),
                     confidence=0.90,
                     risk_level="LOW",
@@ -75,16 +117,16 @@ class AIRecommendationEngine:
                 )
             )
 
-        # Recommendation: organize images
         image_count = categories.get("image", 0)
 
-        if image_count >= 10:
+        if image_count >= self.ORGANIZATION_THRESHOLD:
             recommendations.append(
                 AIRecommendation(
                     action="organize_images",
                     reason=(
                         f"{image_count} image files were found. "
-                        "They could be grouped into an organized image structure."
+                        "They could be grouped into an organized "
+                        "image structure."
                     ),
                     confidence=0.88,
                     risk_level="LOW",
@@ -92,48 +134,198 @@ class AIRecommendationEngine:
                 )
             )
 
-        # Recommendation: review executable files
-        executable_count = categories.get("executable", 0)
+    def _add_scattered_file_recommendations(
+        self,
+        recommendations: List[AIRecommendation],
+        files: List[Dict[str, Any]],
+    ) -> None:
+        """
+        Detect categories whose files are spread across multiple folders.
+        """
 
-        if executable_count > 0:
+        category_folders: Dict[str, set[str]] = {}
+
+        for file_data in files:
+            category = file_data.get("category")
+            path = file_data.get("path")
+
+            if not category or not path:
+                continue
+
+            folder = self._get_parent_folder(path)
+
+            category_folders.setdefault(category, set()).add(folder)
+
+        for category, folders in category_folders.items():
+            if len(folders) < self.SCATTERED_FOLDER_THRESHOLD:
+                continue
+
+            if category == "document":
+                action = "organize_documents"
+                label = "document"
+            elif category == "image":
+                action = "organize_images"
+                label = "image"
+            else:
+                action = "organize_files"
+                label = category
+
             recommendations.append(
                 AIRecommendation(
-                    action="review_executables",
+                    action=action,
                     reason=(
-                        f"{executable_count} executable file(s) were found. "
-                        "They should be reviewed before any management action."
+                        f"{label.capitalize()} files are scattered "
+                        f"across {len(folders)} folders. "
+                        "They could be grouped into a more organized "
+                        "folder structure."
                     ),
-                    confidence=0.95,
-                    risk_level="HIGH",
-                    requires_confirmation=True,
-                )
-            )
-
-        # Recommendation: review duplicate files
-        duplicate_file_count = sum(
-            group.get("count", 0)
-            for group in duplicates
-        )
-
-        if duplicate_file_count > 0:
-            duplicate_group_count = len(duplicates)
-
-            recommendations.append(
-                AIRecommendation(
-                    action="review_duplicates",
-                    reason=(
-                        f"{duplicate_file_count} duplicate file(s) "
-                        f"were found across {duplicate_group_count} "
-                        "duplicate group(s). "
-                        "Review them to reduce unnecessary storage."
-                    ),
-                    confidence=0.98,
+                    confidence=0.84,
                     risk_level="LOW",
                     requires_confirmation=True,
                 )
             )
 
-        return recommendations
+    def _add_large_file_recommendation(
+        self,
+        recommendations: List[AIRecommendation],
+        files: List[Dict[str, Any]],
+    ) -> None:
+        """
+        Recommend review when large files consume significant storage.
+        """
+
+        large_files = [
+            file_data
+            for file_data in files
+            if self._get_file_size(file_data) >= self.LARGE_FILE_THRESHOLD
+        ]
+
+        if not large_files:
+            return
+
+        largest_size = max(
+            self._get_file_size(file_data)
+            for file_data in large_files
+        )
+
+        recommendations.append(
+            AIRecommendation(
+                action="review_large_files",
+                reason=(
+                    f"{len(large_files)} large file(s) were found "
+                    f"using at least {self._format_size(largest_size)}. "
+                    "Review them to identify files that may no longer "
+                    "be needed."
+                ),
+                confidence=0.91,
+                risk_level="LOW",
+                requires_confirmation=True,
+            )
+        )
+
+    def _add_executable_recommendation(
+        self,
+        recommendations: List[AIRecommendation],
+        categories: Dict[str, int],
+    ) -> None:
+        """
+        Recommend review of executable files.
+        """
+
+        executable_count = categories.get("executable", 0)
+
+        if executable_count <= 0:
+            return
+
+        recommendations.append(
+            AIRecommendation(
+                action="review_executables",
+                reason=(
+                    f"{executable_count} executable file(s) were found. "
+                    "They should be reviewed before any management action."
+                ),
+                confidence=0.95,
+                risk_level="HIGH",
+                requires_confirmation=True,
+            )
+        )
+
+    def _add_duplicate_recommendation(
+        self,
+        recommendations: List[AIRecommendation],
+        duplicates: List[Dict[str, Any]],
+    ) -> None:
+        """
+        Recommend review of duplicate files.
+        """
+
+        duplicate_file_count = sum(
+            group.get("count", 0)
+            for group in duplicates
+        )
+
+        if duplicate_file_count <= 0:
+            return
+
+        duplicate_group_count = len(duplicates)
+
+        recommendations.append(
+            AIRecommendation(
+                action="review_duplicates",
+                reason=(
+                    f"{duplicate_file_count} duplicate file(s) "
+                    f"were found across {duplicate_group_count} "
+                    "duplicate group(s). "
+                    "Review them to reduce unnecessary storage."
+                ),
+                confidence=0.98,
+                risk_level="LOW",
+                requires_confirmation=True,
+            )
+        )
+
+    @staticmethod
+    def _get_parent_folder(path: str) -> str:
+        """
+        Return the immediate parent folder for a file path.
+        """
+
+        parts = PurePath(path).parts
+
+        if len(parts) <= 1:
+            return ""
+
+        return str(PurePath(*parts[:-1]))
+
+    @staticmethod
+    def _get_file_size(file_data: Dict[str, Any]) -> int:
+        """
+        Safely extract a file size from analyzed file data.
+        """
+
+        size = file_data.get("size", 0)
+
+        if not isinstance(size, (int, float)):
+            return 0
+
+        return int(size)
+
+    @staticmethod
+    def _format_size(size: int) -> str:
+        """
+        Format a byte size into a human-readable value.
+        """
+
+        if size >= 1000 ** 3:
+            return f"{size / (1000 ** 3):.1f} GB"
+
+        if size >= 1000 ** 2:
+            return f"{size / (1000 ** 2):.1f} MB"
+
+        if size >= 1000:
+            return f"{size / 1000:.1f} KB"
+
+        return f"{size} bytes"
 
     @staticmethod
     def recommendation_to_dict(
