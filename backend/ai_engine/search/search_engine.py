@@ -12,8 +12,10 @@ Important Principles:
     - Never modify user files
     - Search only indexed files
     - Keep filtering deterministic
+    - Match folders by real path components
 """
 
+from pathlib import PurePath
 from typing import List, Optional
 
 from backend.models.ai_file_index import AIFileIndex
@@ -34,13 +36,12 @@ class AISearchEngine:
         category: Optional[str] = None,
         file_type: Optional[str] = None,
         query: Optional[str] = None,
+        folder: Optional[str] = None,
+        size_min: Optional[int] = None,
+        size_max: Optional[int] = None,
     ) -> List[AIFileIndex]:
         """
         Search indexed files using optional filters.
-
-        Category is inferred from common file extensions because the
-        current AI index stores file type/extension rather than a
-        separate category field.
         """
 
         files = self.db.query(AIFileIndex).all()
@@ -60,6 +61,19 @@ class AISearchEngine:
             ):
                 continue
 
+            if not self._matches_folder(
+                file,
+                folder,
+            ):
+                continue
+
+            if not self._matches_size(
+                file,
+                size_min,
+                size_max,
+            ):
+                continue
+
             if not self._matches_query(
                 file,
                 query,
@@ -74,18 +88,20 @@ class AISearchEngine:
         self,
         category: Optional[str] = None,
         file_type: Optional[str] = None,
+        folder: Optional[str] = None,
+        size_min: Optional[int] = None,
+        size_max: Optional[int] = None,
     ) -> List[dict]:
         """
         Find duplicate groups from the indexed files.
-
-        Files with the same non-empty content hash are grouped
-        together. Only groups containing more than one file are
-        returned.
         """
 
         files = self.search_files(
             category=category,
             file_type=file_type,
+            folder=folder,
+            size_min=size_min,
+            size_max=size_max,
         )
 
         groups = {}
@@ -257,6 +273,67 @@ class AISearchEngine:
         return extension in extensions
 
     @staticmethod
+    def _matches_folder(
+        file: AIFileIndex,
+        folder: Optional[str],
+    ) -> bool:
+        """
+        Match a folder by an exact path component.
+        """
+
+        if not folder:
+            return True
+
+        normalized_folder = folder.strip()
+
+        if not normalized_folder:
+            return True
+
+        path = file.path or ""
+
+        try:
+            path_parts = PurePath(path).parts
+        except Exception:
+            return False
+
+        return any(
+            part.casefold() == normalized_folder.casefold()
+            for part in path_parts
+        )
+
+    @staticmethod
+    def _matches_size(
+        file: AIFileIndex,
+        size_min: Optional[int],
+        size_max: Optional[int],
+    ) -> bool:
+        """
+        Match an indexed file against optional size boundaries.
+
+        Size values are expressed in bytes.
+        """
+
+        file_size = getattr(
+            file,
+            "file_size",
+            None,
+        )
+
+        if file_size is None:
+            return False if (
+                size_min is not None
+                or size_max is not None
+            ) else True
+
+        if size_min is not None and file_size < size_min:
+            return False
+
+        if size_max is not None and file_size > size_max:
+            return False
+
+        return True
+
+    @staticmethod
     def _matches_query(
         file: AIFileIndex,
         query: Optional[str],
@@ -278,4 +355,3 @@ class AISearchEngine:
         ).lower()
 
         return search_text in path
-

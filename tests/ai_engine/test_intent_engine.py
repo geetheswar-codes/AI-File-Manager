@@ -102,6 +102,8 @@ def test_intent_to_dict():
     assert data["intent"] == "FIND_DUPLICATES"
     assert data["category"] == "image"
     assert data["confidence"] >= 0.90
+
+
 def test_copies_of_pictures_means_duplicates():
     engine = AIIntentEngine()
 
@@ -177,3 +179,130 @@ def test_unrelated_word_does_not_trigger_intent():
     )
 
     assert result.intent == IntentType.REVIEW_EXECUTABLES
+
+
+def test_find_pdfs_in_downloads():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find my PDF files in Downloads folder"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.category == "document"
+    assert result.file_type == "pdf"
+    assert result.folder == "Downloads"
+
+
+def test_find_large_files():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find files bigger than 100 MB"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.size_min == 100_000_000
+    assert result.size_max is None
+    assert result.query is None
+
+
+def test_find_files_larger_than_one_gb():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Show me files larger than 1 GB"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.size_min == 1_000_000_000
+    assert result.size_max is None
+
+
+def test_find_small_files():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find files smaller than 10 MB"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.size_min is None
+    assert result.size_max == 10_000_000
+
+
+def test_find_files_between_two_sizes():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find files between 10 MB and 100 MB"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.size_min == 10_000_000
+    assert result.size_max == 100_000_000
+
+
+def test_size_filter_combines_with_pdf_filter():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find PDF files bigger than 50 MB"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.category == "document"
+    assert result.file_type == "pdf"
+    assert result.size_min == 50_000_000
+    assert result.size_max is None
+    assert result.query is None
+
+
+def test_size_filter_combines_with_folder_filter():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find files bigger than 100 MB in Downloads folder"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.folder == "Downloads"
+    assert result.size_min == 100_000_000
+    assert result.size_max is None
+    assert result.query is None
+
+
+def test_size_units_are_case_insensitive():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find files bigger than 2 gb"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.size_min == 2_000_000_000
+
+
+def test_binary_size_units_are_supported():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find files bigger than 1 GiB"
+    )
+
+    assert result.intent == IntentType.FIND_FILES
+    assert result.size_min == 1_073_741_824
+
+
+def test_size_filter_is_included_in_intent_dict():
+    engine = AIIntentEngine()
+
+    result = engine.understand(
+        "Find files bigger than 100 MB"
+    )
+
+    data = engine.intent_to_dict(result)
+
+    assert data["intent"] == "FIND_FILES"
+    assert data["size_min"] == 100_000_000
+    assert data["size_max"] is None

@@ -31,6 +31,9 @@ class AICommand:
     category: Optional[str] = None
     file_type: Optional[str] = None
     query: Optional[str] = None
+    folder: Optional[str] = None
+    size_min: Optional[int] = None
+    size_max: Optional[int] = None
     confidence: float = 0.0
     requires_confirmation: bool = False
     reason: str = ""
@@ -82,6 +85,9 @@ class AICommandEngine:
             category=intent.category,
             file_type=intent.file_type,
             query=intent.query,
+            folder=intent.folder,
+            size_min=intent.size_min,
+            size_max=intent.size_max,
             confidence=intent.confidence,
             requires_confirmation=(
                 action in self.CONFIRMATION_REQUIRED
@@ -105,6 +111,9 @@ class AICommandEngine:
             "category": command.category,
             "file_type": command.file_type,
             "query": command.query,
+            "folder": command.folder,
+            "size_min": command.size_min,
+            "size_max": command.size_max,
             "confidence": command.confidence,
             "requires_confirmation": command.requires_confirmation,
             "reason": command.reason,

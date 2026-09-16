@@ -148,3 +148,79 @@ def test_command_to_dict():
     assert data["category"] == "document"
     assert data["file_type"] == "pdf"
     assert data["confidence"] == 0.88
+
+
+def test_size_filters_are_transferred_to_command():
+    engine = AICommandEngine()
+
+    intent = AIIntent(
+        intent=IntentType.FIND_FILES,
+        confidence=0.88,
+        size_min=100_000_000,
+        size_max=None,
+    )
+
+    result = engine.create_command(intent)
+
+    assert result is not None
+    assert result.action == "find_files"
+    assert result.size_min == 100_000_000
+    assert result.size_max is None
+
+
+def test_size_range_is_transferred_to_command():
+    engine = AICommandEngine()
+
+    intent = AIIntent(
+        intent=IntentType.FIND_FILES,
+        confidence=0.88,
+        size_min=10_000_000,
+        size_max=100_000_000,
+    )
+
+    result = engine.create_command(intent)
+
+    assert result is not None
+    assert result.size_min == 10_000_000
+    assert result.size_max == 100_000_000
+
+
+def test_folder_and_size_filters_are_transferred_to_command():
+    engine = AICommandEngine()
+
+    intent = AIIntent(
+        intent=IntentType.FIND_FILES,
+        confidence=0.88,
+        category="document",
+        file_type="pdf",
+        folder="Downloads",
+        size_min=50_000_000,
+    )
+
+    result = engine.create_command(intent)
+
+    assert result is not None
+    assert result.action == "find_files"
+    assert result.category == "document"
+    assert result.file_type == "pdf"
+    assert result.folder == "Downloads"
+    assert result.size_min == 50_000_000
+    assert result.size_max is None
+
+
+def test_size_filters_are_included_in_command_dict():
+    engine = AICommandEngine()
+
+    intent = AIIntent(
+        intent=IntentType.FIND_FILES,
+        confidence=0.88,
+        size_min=10_000_000,
+        size_max=100_000_000,
+    )
+
+    command = engine.create_command(intent)
+    data = engine.command_to_dict(command)
+
+    assert data["action"] == "find_files"
+    assert data["size_min"] == 10_000_000
+    assert data["size_max"] == 100_000_000

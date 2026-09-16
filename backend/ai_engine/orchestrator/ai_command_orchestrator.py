@@ -10,9 +10,9 @@ Flow:
         ↓
     Command Engine
         ↓
-    Search Engine (read-only)
-        ↓
     Decision Engine
+        ↓
+    Search Engine (read-only)
 """
 
 from dataclasses import dataclass, asdict
@@ -106,6 +106,9 @@ class AICommandOrchestrator:
                 category=command.category,
                 file_type=command.file_type,
                 query=command.query,
+                folder=command.folder,
+                size_min=command.size_min,
+                size_max=command.size_max,
             )
 
         if (
@@ -116,6 +119,9 @@ class AICommandOrchestrator:
             search_results = self.search_engine.search_duplicates(
                 category=command.category,
                 file_type=command.file_type,
+                folder=command.folder,
+                size_min=command.size_min,
+                size_max=command.size_max,
             )
 
         return AICommandResult(

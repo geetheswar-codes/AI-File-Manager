@@ -41,6 +41,9 @@ class AIIntent:
     category: Optional[str] = None
     file_type: Optional[str] = None
     query: Optional[str] = None
+    folder: Optional[str] = None
+    size_min: Optional[int] = None
+    size_max: Optional[int] = None
     reason: str = ""
 
 
@@ -103,6 +106,19 @@ class AIIntentEngine:
         "locate",
         "where",
         "display",
+    }
+
+    SIZE_SEARCH_KEYWORDS = {
+        "large",
+        "larger",
+        "largest",
+        "big",
+        "bigger",
+        "biggest",
+        "small",
+        "smaller",
+        "smallest",
+        "size",
     }
 
     CATEGORY_KEYWORDS = {
@@ -175,6 +191,16 @@ class AIIntentEngine:
         "js": {"javascript", ".js"},
     }
 
+    FOLDER_PATTERNS = (
+        r"\bin\s+(?:the\s+)?([a-zA-Z0-9_.-]+)\s+(?:folder|directory)\b",
+        r"\bfrom\s+(?:the\s+)?([a-zA-Z0-9_.-]+)\s+(?:folder|directory)\b",
+    )
+
+    SIZE_PATTERN = (
+        r"(?P<value>\d+(?:\.\d+)?)\s*"
+        r"(?P<unit>kb|kib|mb|mib|gb|gib|tb|tib|bytes?|b)\b"
+    )
+
     def understand(self, request: str) -> AIIntent:
         """
         Convert a natural-language request into a structured intent.
@@ -195,63 +221,101 @@ class AIIntentEngine:
 
         category = self.detect_category(text)
         file_type = self.detect_file_type(text)
+        folder = self.detect_folder(original_request)
 
-        # Highest priority: duplicate requests.
-        if self._contains_any(text, self.DUPLICATE_KEYWORDS):
+        size_min, size_max = self.detect_size_range(
+            original_request
+        )
+
+        query = self.detect_query(
+            original_request,
+            folder=folder,
+            file_type=file_type,
+            category=category,
+            size_min=size_min,
+            size_max=size_max,
+        )
+
+        if self._contains_any(
+            text,
+            self.DUPLICATE_KEYWORDS,
+        ):
             return AIIntent(
                 intent=IntentType.FIND_DUPLICATES,
                 confidence=0.96,
                 category=category,
                 file_type=file_type,
-                query=original_request,
+                query=query,
+                folder=folder,
+                size_min=size_min,
+                size_max=size_max,
                 reason="The request refers to duplicate or copied files.",
             )
 
-        # Organizing files changes their organization, so keep this
-        # separate from read-only search requests.
-        if self._contains_any(text, self.ORGANIZE_KEYWORDS):
+        if self._contains_any(
+            text,
+            self.ORGANIZE_KEYWORDS,
+        ):
             return AIIntent(
                 intent=IntentType.ORGANIZE_FILES,
                 confidence=0.92,
                 category=category,
                 file_type=file_type,
-                query=original_request,
+                query=query,
+                folder=folder,
+                size_min=size_min,
+                size_max=size_max,
                 reason="The request asks to organize or group files.",
             )
 
-        # Executables require special review because of their higher risk.
-        if self._contains_any(text, self.EXECUTABLE_KEYWORDS):
+        if self._contains_any(
+            text,
+            self.EXECUTABLE_KEYWORDS,
+        ):
             return AIIntent(
                 intent=IntentType.REVIEW_EXECUTABLES,
                 confidence=0.90,
                 category="executable",
-                query=original_request,
+                file_type=file_type,
+                query=query,
+                folder=folder,
+                size_min=size_min,
+                size_max=size_max,
                 reason="The request refers to executable or application files.",
             )
 
-        # Explicit scanning/analyzing requests.
-        if self._contains_any(text, self.SCAN_KEYWORDS):
+        if self._contains_any(
+            text,
+            self.SCAN_KEYWORDS,
+        ):
             return AIIntent(
                 intent=IntentType.SCAN_FILES,
                 confidence=0.95,
                 category=category,
                 file_type=file_type,
-                query=original_request,
+                query=query,
+                folder=folder,
+                size_min=size_min,
+                size_max=size_max,
                 reason="The request asks the system to scan or analyze files.",
             )
 
-        # Read-only file searches.
         if self._looks_like_file_search(
             text,
             category,
             file_type,
+            size_min,
+            size_max,
         ):
             return AIIntent(
                 intent=IntentType.FIND_FILES,
                 confidence=0.88,
                 category=category,
                 file_type=file_type,
-                query=original_request,
+                query=query,
+                folder=folder,
+                size_min=size_min,
+                size_max=size_max,
                 reason=(
                     "The request appears to ask for files "
                     "matching a description."
@@ -271,7 +335,10 @@ class AIIntentEngine:
         """
 
         for category, keywords in self.CATEGORY_KEYWORDS.items():
-            if self._contains_any(text, keywords):
+            if self._contains_any(
+                text,
+                keywords,
+            ):
                 return category
 
         return None
@@ -285,24 +352,179 @@ class AIIntentEngine:
         """
 
         for file_type, keywords in self.FILE_TYPE_KEYWORDS.items():
-            if self._contains_any(text, keywords):
+            if self._contains_any(
+                text,
+                keywords,
+            ):
                 return file_type
 
         return None
+
+    @staticmethod
+    def detect_folder(
+        text: str,
+    ) -> Optional[str]:
+        """
+        Detect a folder name from common natural-language patterns.
+
+        The original capitalization of the folder name is preserved.
+        """
+
+        for pattern in AIIntentEngine.FOLDER_PATTERNS:
+            match = re.search(
+                pattern,
+                text,
+                re.IGNORECASE,
+            )
+
+            if match:
+                return match.group(1)
+
+        return None
+
+    @classmethod
+    def detect_size_range(
+        cls,
+        text: str,
+    ) -> tuple[Optional[int], Optional[int]]:
+        """
+        Detect minimum and maximum file sizes.
+
+        Examples:
+            bigger than 100 MB
+                -> (100000000, None)
+
+            larger than 1 GB
+                -> (1000000000, None)
+
+            smaller than 10 MB
+                -> (None, 10000000)
+
+            between 10 MB and 100 MB
+                -> (10000000, 100000000)
+        """
+
+        normalized = text.lower()
+
+        matches = list(
+            re.finditer(
+                cls.SIZE_PATTERN,
+                normalized,
+            )
+        )
+
+        if not matches:
+            return None, None
+
+        def to_bytes(match) -> int:
+            value = float(match.group("value"))
+            unit = match.group("unit").lower()
+
+            multipliers = {
+                "b": 1,
+                "byte": 1,
+                "bytes": 1,
+                "kb": 1000,
+                "kib": 1024,
+                "mb": 1000**2,
+                "mib": 1024**2,
+                "gb": 1000**3,
+                "gib": 1024**3,
+                "tb": 1000**4,
+                "tib": 1024**4,
+            }
+
+            return int(value * multipliers[unit])
+
+        if len(matches) >= 2 and re.search(
+            r"\bbetween\b",
+            normalized,
+        ):
+            first = to_bytes(matches[0])
+            second = to_bytes(matches[1])
+
+            return (
+                min(first, second),
+                max(first, second),
+            )
+
+        value = to_bytes(matches[0])
+
+        before = normalized[:matches[0].start()]
+
+        if re.search(
+            r"(?:less|smaller|under|below|at\s+most|maximum|max)"
+            r"(?:\s+than)?\s*$",
+            before,
+        ):
+            return None, value
+
+        if re.search(
+            r"(?:more|larger|bigger|greater|over|above|at\s+least|minimum|min)"
+            r"(?:\s+than)?\s*$",
+            before,
+        ):
+            return value, None
+
+        return None, None
+
+    @staticmethod
+    def detect_query(
+        text: str,
+        folder: Optional[str],
+        file_type: Optional[str],
+        category: Optional[str],
+        size_min: Optional[int],
+        size_max: Optional[int],
+    ) -> Optional[str]:
+        """
+        Detect an actual free-text search query.
+
+        Structured requests should rely on structured filters
+        instead of using the complete natural-language request
+        as a filename/path query.
+        """
+
+        if (
+            folder
+            or file_type
+            or category
+            or size_min is not None
+            or size_max is not None
+        ):
+            return None
+
+        return text.strip() or None
 
     def _looks_like_file_search(
         self,
         text: str,
         category: Optional[str],
         file_type: Optional[str],
+        size_min: Optional[int],
+        size_max: Optional[int],
     ) -> bool:
         """
         Determine whether the request appears to be a file search.
         """
 
         return (
-            self._contains_any(text, self.SEARCH_KEYWORDS)
-            and (category is not None or file_type is not None)
+            (
+                self._contains_any(
+                    text,
+                    self.SEARCH_KEYWORDS,
+                )
+                or self._contains_any(
+                    text,
+                    self.SIZE_SEARCH_KEYWORDS,
+                )
+            )
+            and (
+                category is not None
+                or file_type is not None
+                or size_min is not None
+                or size_max is not None
+            )
         )
 
     @staticmethod
@@ -320,13 +542,18 @@ class AIIntentEngine:
         for keyword in keywords:
             pattern = rf"(?<!\w){re.escape(keyword)}(?!\w)"
 
-            if re.search(pattern, text):
+            if re.search(
+                pattern,
+                text,
+            ):
                 return True
 
         return False
 
     @staticmethod
-    def _unknown_intent(reason: str) -> AIIntent:
+    def _unknown_intent(
+        reason: str,
+    ) -> AIIntent:
         """
         Create a safe unknown intent.
         """
@@ -351,5 +578,8 @@ class AIIntentEngine:
             "category": intent.category,
             "file_type": intent.file_type,
             "query": intent.query,
+            "folder": intent.folder,
+            "size_min": intent.size_min,
+            "size_max": intent.size_max,
             "reason": intent.reason,
         }
