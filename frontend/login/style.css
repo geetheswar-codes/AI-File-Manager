@@ -179,17 +179,90 @@ footer {
     font-size: 12px;
 }
 
-@media (max-width: 480px) {
+
+/* Responsive Login Layout */
+
+@media (max-width: 599px) {
     .login-page {
         padding: 14px;
     }
 
     .login-card {
+        max-width: 460px;
         padding: 26px 20px;
         border-radius: 18px;
     }
 
+    .brand {
+        margin-bottom: 30px;
+    }
+
     .welcome h2 {
         font-size: 25px;
+    }
+}
+
+@media (min-width: 600px) {
+    .login-page {
+        padding: 28px;
+    }
+
+    .login-card {
+        max-width: 500px;
+        padding: 34px 30px;
+    }
+
+    .brand {
+        margin-bottom: 36px;
+    }
+
+    .welcome h2 {
+        font-size: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+}
+
+@media (min-width: 900px) {
+    .login-page {
+        padding: 40px;
+    }
+
+    .login-card {
+        max-width: 520px;
+        padding: 38px 34px;
+    }
+
+    .brand-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .brand h1 {
+        font-size: 21px;
+    }
+
+    .welcome h2 {
+        font-size: 32px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .login-page {
+        padding: 50px;
+    }
+
+    .login-card {
+        max-width: 540px;
+        padding: 42px 38px;
+    }
+}
+
+@media (min-width: 1500px) {
+    .login-card {
+        max-width: 560px;
+        padding: 46px 42px;
     }
 }
