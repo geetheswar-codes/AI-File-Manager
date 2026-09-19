@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from sqlalchemy.orm import Session
 
 from backend.models.file import File
@@ -42,6 +44,26 @@ class FileRepository:
             .filter(File.owner_id == owner_id)
             .all()
         )
+
+    @staticmethod
+    def get_by_storage_path(
+        db: Session, storage_path: str
+    ) -> File | None:
+        file = (
+            db.query(File)
+            .filter(File.storage_path == storage_path)
+            .first()
+        )
+
+        if file is not None:
+            return file
+
+        target_path = Path(storage_path).resolve()
+        for candidate in db.query(File).filter(File.storage_path.isnot(None)):
+            if Path(candidate.storage_path).resolve() == target_path:
+                return candidate
+
+        return None
 
     @staticmethod
     def update(

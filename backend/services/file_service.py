@@ -55,6 +55,13 @@ class FileService:
         )
 
     @staticmethod
+    def get_file_by_storage_path(db: Session, storage_path: str):
+        return FileRepository.get_by_storage_path(
+            db=db,
+            storage_path=storage_path,
+        )
+
+    @staticmethod
     def rename_file(
         db: Session,
         file,

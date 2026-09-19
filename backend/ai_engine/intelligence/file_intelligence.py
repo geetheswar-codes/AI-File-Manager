@@ -4,37 +4,27 @@ AI File Management Platform v2.0
 File Intelligence Engine
 
 Purpose:
-    Analyze file metadata collected by SystemScanner and determine
-    basic file intelligence such as category and file type.
+    Analyze file metadata and supported file content using the
+    local AI engine.
 
 Important Principles:
     - Read Only
     - Privacy First
     - Security First
     - AI First
-
-Current Capabilities:
-    - Analyze file metadata
-    - Determine file category
-    - Determine file type
-    - Detect potentially unknown file types
-    - Produce structured analysis results
-
-Future Capabilities:
-    - Content analysis
-    - Duplicate detection
-    - SHA-256 hashing
-    - AI tags
-    - Risk scoring
-    - Semantic understanding
+    - User remains in control
 """
 
 from typing import Any, Dict, List
 
+from backend.services.ai.ai_file_analysis_service import (
+    AIFileAnalysisService,
+)
+
 
 class FileIntelligenceEngine:
     """
-    Analyze file metadata for AI processing.
+    Analyze file metadata and supported file content.
 
     The engine does not modify files.
     """
@@ -138,12 +128,16 @@ class FileIntelligenceEngine:
         },
     }
 
+    def __init__(self):
+        self.ai_service = AIFileAnalysisService()
+
     def analyze_file(
         self,
         metadata: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Analyze one file metadata record.
+        Analyze one file using metadata and, when supported,
+        local AI content analysis.
         """
 
         name = metadata.get("name", "")
@@ -160,7 +154,7 @@ class FileIntelligenceEngine:
             mime_type=mime_type,
         )
 
-        return {
+        result = {
             "name": name,
             "path": metadata.get("path"),
             "extension": extension,
@@ -169,7 +163,37 @@ class FileIntelligenceEngine:
             "hidden": metadata.get("hidden", False),
             "category": category,
             "file_type": file_type,
+            "ai_analysis": None,
+            "ai_model": None,
         }
+
+        file_path = metadata.get("path")
+
+        if file_path:
+            try:
+                ai_result = self.ai_service.analyze_file(
+                    file_path=file_path,
+                    metadata={
+                        "file_name": name,
+                        "extension": extension,
+                        "file_type": file_type,
+                        "category": category,
+                        "mime_type": mime_type,
+                    },
+                )
+
+                if ai_result.get("content_analyzed"):
+                    result["ai_analysis"] = ai_result.get(
+                        "analysis"
+                    )
+                    result["ai_model"] = ai_result.get("model")
+
+            except (OSError, TypeError, ValueError):
+                # AI analysis must never prevent normal
+                # metadata analysis from completing.
+                result["ai_analysis"] = None
+
+        return result
 
     def analyze_files(
         self,
@@ -262,10 +286,17 @@ class FileIntelligenceEngine:
             category = file_data["category"]
             categories[category] = categories.get(category, 0) + 1
 
+        ai_analyzed_files = sum(
+            1
+            for file_data in analyzed_files
+            if file_data.get("ai_analysis") is not None
+        )
+
         return {
             "files": analyzed_files,
             "categories": categories,
             "total_files": len(analyzed_files),
+            "ai_analyzed_files": ai_analyzed_files,
             "scanner_errors": scan_result.get("errors", []),
             "scanner_summary": scan_result.get("summary", {}),
         }

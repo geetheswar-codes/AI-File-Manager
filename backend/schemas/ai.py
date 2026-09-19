@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AIScannerSummary(BaseModel):
@@ -78,6 +79,20 @@ class AIDuplicateGroup(BaseModel):
     files: List[str]
 
     count: int
+
+
+class AIFileAnalysisResponse(BaseModel):
+
+    file_id: int
+    summary: str
+    category: str
+    tags: List[str]
+    risk_level: str
+    confidence: float
+    model: str
+    analyzed_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AIScanResponse(BaseModel):

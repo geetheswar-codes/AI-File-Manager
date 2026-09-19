@@ -46,3 +46,10 @@ class File(Base):
         "User",
         back_populates="files"
     )
+
+    ai_analysis: Mapped[Optional["AIFileAnalysis"]] = relationship(
+        "AIFileAnalysis",
+        back_populates="file",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )

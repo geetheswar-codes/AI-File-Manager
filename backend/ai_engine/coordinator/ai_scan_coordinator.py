@@ -49,6 +49,10 @@ from backend.ai_engine.recommendation.recommendation_engine import (
     AIRecommendationEngine,
 )
 from backend.ai_engine.scanner.system_scanner import SystemScanner
+from backend.services.ai.ai_analysis_persistence_service import (
+    AIAnalysisPersistenceService,
+)
+from backend.services.file_service import FileService
 
 
 class AIScanCoordinator:
@@ -61,12 +65,14 @@ class AIScanCoordinator:
     """
 
     def __init__(self, db: Session):
+        self.db = db
         self.scanner = SystemScanner()
         self.index_service = AIFileIndexService(db)
         self.intelligence = FileIntelligenceEngine()
         self.recommendation_engine = AIRecommendationEngine()
         self.decision_engine = AIDecisionEngine()
         self.duplicate_detector = DuplicateFileDetector()
+        self.analysis_persistence = AIAnalysisPersistenceService(db)
 
     def scan_and_analyze(
         self,
@@ -88,6 +94,12 @@ class AIScanCoordinator:
                 scanned_files
             )
         )
+        files_to_analyze.extend(
+            self._managed_files_missing_analysis(
+                scanned_files,
+                {file_data.get("path") for file_data in files_to_analyze},
+            )
+        )
 
         # Step 3: Analyze only new/changed files.
         analysis_input = {
@@ -101,6 +113,8 @@ class AIScanCoordinator:
                 analysis_input
             )
         )
+
+        self._persist_managed_file_analyses(analysis_result.get("files", []))
 
         # Step 4: Update the persistent index.
         indexed_count = (
@@ -204,3 +218,50 @@ class AIScanCoordinator:
             "decisions": decisions,
             "duplicates": duplicate_groups,
         }
+
+    def _persist_managed_file_analyses(
+        self, analyzed_files: list[Dict[str, Any]]
+    ) -> None:
+        """Persist successful analyses only for files uploaded by a user."""
+        for analyzed_file in analyzed_files:
+            analysis = analyzed_file.get("ai_analysis")
+            path = analyzed_file.get("path")
+            if not analysis or not path:
+                continue
+
+            managed_file = FileService.get_file_by_storage_path(
+                db=self.db, storage_path=path
+            )
+            if managed_file is None:
+                continue
+
+            self.analysis_persistence.upsert(
+                file_id=managed_file.id,
+                analysis=analysis,
+                model=analyzed_file.get("ai_model"),
+            )
+
+    def _managed_files_missing_analysis(
+        self,
+        scanned_files: list[Dict[str, Any]],
+        analyzed_paths: set[str | None],
+    ) -> list[Dict[str, Any]]:
+        """Catch up managed files indexed before AI persistence existed."""
+        missing_analysis = []
+
+        for metadata in scanned_files:
+            path = metadata.get("path")
+            if not path or path in analyzed_paths:
+                continue
+
+            managed_file = FileService.get_file_by_storage_path(
+                db=self.db,
+                storage_path=path,
+            )
+            if (
+                managed_file is not None
+                and self.analysis_persistence.get(managed_file.id) is None
+            ):
+                missing_analysis.append(metadata)
+
+        return missing_analysis

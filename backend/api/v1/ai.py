@@ -9,7 +9,10 @@ from backend.ai_engine.coordinator.ai_scan_coordinator import (
 from backend.core.database import get_db
 from backend.core.dependencies import get_current_user
 from backend.models.user import User
-from backend.schemas.ai import AIScanResponse
+from backend.schemas.ai import AIFileAnalysisResponse, AIScanResponse
+from backend.services.ai.ai_analysis_persistence_service import (
+    AIAnalysisPersistenceService,
+)
 from backend.services.file_service import FileService
 from backend.services.ai.ai_storage_scan_service import (
     AIStorageScanService,
@@ -28,6 +31,37 @@ def ai_status():
         "module": "AI Engine",
         "status": "available",
     }
+
+
+@router.get(
+    "/files/{file_id}/analysis",
+    response_model=AIFileAnalysisResponse,
+)
+def get_file_analysis(
+    file_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return persisted AI analysis for a file owned by the user."""
+    file = FileService.get_file(db=db, file_id=file_id)
+    if not file:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found",
+        )
+    if file.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to access this analysis",
+        )
+
+    analysis = AIAnalysisPersistenceService(db).get(file_id)
+    if not analysis:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="AI analysis not found",
+        )
+    return analysis
 
 
 @router.post(
