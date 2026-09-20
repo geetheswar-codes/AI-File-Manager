@@ -7,19 +7,18 @@ const navItems = document.querySelectorAll(".nav-item");
 
 /* Dark Mode */
 
-function applyTheme() {
+function applyThemePreference() {
     const isDark = localStorage.getItem("darkMode") !== "false";
-
-    document.body.classList.toggle("light-mode", !isDark);
     darkMode.checked = isDark;
 }
 
 darkMode.addEventListener("change", () => {
     localStorage.setItem("darkMode", darkMode.checked);
-    applyTheme();
+
+    document.body.classList.toggle("light-mode", !darkMode.checked);
 });
 
-applyTheme();
+applyThemePreference();
 
 /* Back to dashboard */
 

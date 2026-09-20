@@ -628,3 +628,84 @@ button {
     appearance: none;
     display: none;
 }
+
+/* Light Mode */
+
+body.light-mode {
+    background: var(--app-bg);
+    color: var(--app-text);
+}
+
+body.light-mode .topbar {
+    background: rgba(248, 250, 252, 0.94);
+    border-bottom-color: var(--app-border);
+}
+
+body.light-mode .page-title h1,
+body.light-mode .section-title h2,
+body.light-mode .folder-card > span:nth-child(2),
+body.light-mode .file-info strong {
+    color: var(--app-text);
+}
+
+body.light-mode .page-title p,
+body.light-mode .location,
+body.light-mode .breadcrumb,
+body.light-mode .section-title > span,
+body.light-mode .folder-card small,
+body.light-mode .file-info span,
+body.light-mode .nav-item,
+body.light-mode .nav-item small {
+    color: var(--app-text-muted);
+}
+
+body.light-mode .add-button,
+body.light-mode .search-box,
+body.light-mode .folder-card,
+body.light-mode .file-item {
+    background: var(--app-surface);
+    border-color: var(--app-border);
+}
+
+body.light-mode #search-input {
+    color: var(--app-text);
+}
+
+body.light-mode #search-input::placeholder {
+    color: var(--app-text-subtle);
+}
+
+body.light-mode .clear-search,
+body.light-mode .file-menu {
+    color: var(--app-text-muted);
+}
+
+body.light-mode .filter {
+    background: var(--app-surface);
+    border-color: var(--app-border);
+    color: var(--app-text-muted);
+}
+
+body.light-mode .filter.active {
+    background: var(--app-accent);
+    border-color: var(--app-accent);
+    color: #ffffff;
+}
+
+body.light-mode .folder-icon {
+    background: var(--app-surface-alt);
+}
+
+body.light-mode .bottom-nav {
+    background: rgba(248, 250, 252, 0.96);
+    border-top-color: var(--app-border);
+}
+
+body.light-mode .nav-item.active {
+    color: var(--app-accent);
+    background: rgba(37, 99, 235, 0.08);
+}
+
+body.light-mode .empty-message {
+    color: var(--app-text-muted);
+}

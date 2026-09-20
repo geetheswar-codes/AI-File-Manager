@@ -607,3 +607,77 @@ button {
     }
 }
 
+
+/* Light Mode */
+
+body.light-mode {
+    background: var(--app-bg);
+    color: var(--app-text);
+}
+
+body.light-mode .topbar {
+    background: rgba(248, 250, 252, 0.94);
+    border-bottom-color: var(--app-border);
+}
+
+body.light-mode .brand h1,
+body.light-mode .welcome h2,
+body.light-mode .section-title h3,
+body.light-mode .stat-card strong,
+body.light-mode .file-info strong {
+    color: var(--app-text);
+}
+
+body.light-mode .brand p,
+body.light-mode .welcome > p:last-child,
+body.light-mode .stat-card span,
+body.light-mode .section-heading p,
+body.light-mode .section-heading > strong,
+body.light-mode .file-info span,
+body.light-mode .nav-item,
+body.light-mode .nav-item small {
+    color: var(--app-text-muted);
+}
+
+body.light-mode .menu-button,
+body.light-mode .storage-card,
+body.light-mode .stat-card,
+body.light-mode .action-card,
+body.light-mode .file-item {
+    background: var(--app-surface);
+    border-color: var(--app-border);
+}
+
+body.light-mode .menu-button {
+    color: var(--app-text-secondary);
+}
+
+body.light-mode .stat-icon,
+body.light-mode .action-icon {
+    background: var(--app-surface-alt);
+}
+
+body.light-mode .progress {
+    background: var(--app-border-soft);
+}
+
+body.light-mode .file-menu {
+    color: var(--app-text-muted);
+}
+
+body.light-mode .bottom-nav {
+    background: rgba(248, 250, 252, 0.96);
+    border-top-color: var(--app-border);
+}
+
+body.light-mode .nav-item.active {
+    color: var(--app-accent);
+}
+
+body.light-mode .nav-item.active {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+body.light-mode #view-all {
+    color: var(--app-accent);
+}

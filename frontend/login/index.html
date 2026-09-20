@@ -30,13 +30,13 @@
             <form id="login-form">
 
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">Email</label>
 
                     <input
                         type="text"
                         id="username"
                         name="username"
-                        placeholder="Enter your username"
+                        placeholder="Enter your email"
                         autocomplete="username"
                         required
                     >
@@ -65,11 +65,20 @@
                     </div>
                 </div>
 
+                <div class="auth-links">
+                    <a href="#" id="forgot-password">Forgot password?</a>
+                </div>
+
                 <button type="submit" id="login-button">
                     <span id="button-text">Sign in</span>
                 </button>
 
                 <p id="login-message" role="alert"></p>
+
+                <p class="signup-prompt">
+                    Don't have an account?
+                    <a href="../register/index.html">Sign up</a>
+                </p>
 
             </form>
 

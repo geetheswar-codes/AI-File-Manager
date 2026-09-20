@@ -3,9 +3,26 @@ const chatInput = document.getElementById("chat-input");
 const sendButton = document.getElementById("send-button");
 const messages = document.getElementById("messages");
 const suggestions = document.getElementById("suggestions");
+const organizationSuggestion = document.getElementById(
+    "organization-suggestion"
+);
 const newChatButton = document.getElementById("new-chat-button");
 const backButton = document.getElementById("back-button");
 const navItems = document.querySelectorAll(".nav-item");
+
+function applyAISuggestions() {
+    const suggestionsEnabled =
+        localStorage.getItem("ai-suggestions") !== "false";
+
+    const organizationEnabled =
+        localStorage.getItem("smart-organization") !== "false";
+
+    suggestions.hidden = !suggestionsEnabled;
+    organizationSuggestion.hidden =
+        !suggestionsEnabled || !organizationEnabled;
+}
+
+applyAISuggestions();
 
 const responses = {
     "find my largest files":

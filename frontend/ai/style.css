@@ -597,3 +597,79 @@ button {
     }
 }
 
+
+/* Light Mode */
+
+body.light-mode {
+    background: var(--app-bg);
+    color: var(--app-text);
+}
+
+body.light-mode .topbar {
+    background: rgba(248, 250, 252, 0.94);
+    border-bottom-color: var(--app-border);
+}
+
+body.light-mode .page-title h1,
+body.light-mode .assistant-intro h1,
+body.light-mode .message-label {
+    color: var(--app-text);
+}
+
+body.light-mode .page-title p,
+body.light-mode .assistant-intro p,
+body.light-mode .ai-disclaimer,
+body.light-mode .nav-item,
+body.light-mode .nav-item small {
+    color: var(--app-text-muted);
+}
+
+body.light-mode .ai-status {
+    color: var(--app-text-muted);
+}
+
+body.light-mode .new-chat-button,
+body.light-mode .suggestion,
+body.light-mode .message.assistant .message-bubble,
+body.light-mode #chat-input {
+    background: var(--app-surface);
+    border-color: var(--app-border);
+}
+
+body.light-mode .new-chat-button,
+body.light-mode .suggestion,
+body.light-mode #chat-input {
+    color: var(--app-text-secondary);
+}
+
+body.light-mode .assistant-icon {
+    background: var(--app-surface-alt);
+}
+
+body.light-mode .message.user .message-bubble {
+    background: var(--app-accent);
+    color: #ffffff;
+}
+
+body.light-mode .message.assistant .message-bubble {
+    color: var(--app-text);
+}
+
+body.light-mode #chat-input::placeholder {
+    color: var(--app-text-subtle);
+}
+
+body.light-mode .chat-input-area {
+    background: rgba(248, 250, 252, 0.97);
+    border-top-color: var(--app-border);
+}
+
+body.light-mode .bottom-nav {
+    background: rgba(248, 250, 252, 0.96);
+    border-top-color: var(--app-border);
+}
+
+body.light-mode .nav-item.active {
+    color: var(--app-accent);
+    background: rgba(37, 99, 235, 0.08);
+}
