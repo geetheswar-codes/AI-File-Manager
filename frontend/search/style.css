@@ -292,13 +292,18 @@ button {
 
     text-align: left;
 
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+
     transition:
         border-color 0.2s,
-        transform 0.15s;
+        transform 0.15s,
+        box-shadow 0.2s;
 }
 
 .folder-card:hover {
     border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
 .folder-card:active {
@@ -376,11 +381,22 @@ button {
 
     background: #0f172a;
 
-    transition: border-color 0.2s;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+    transition:
+        border-color 0.2s,
+        transform 0.15s,
+        box-shadow 0.2s;
 }
 
 .file-item:hover {
     border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.file-item:active {
+    transform: translateY(0);
 }
 
 .file-icon {
