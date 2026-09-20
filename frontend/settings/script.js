@@ -46,7 +46,7 @@ applyFileView();
 /* Account */
 
 document.querySelector(".profile-card").addEventListener("click", () => {
-    alert("Account settings will be connected to the backend later.");
+    window.location.href = "../profile/index.html";
 });
 
 /* Security */

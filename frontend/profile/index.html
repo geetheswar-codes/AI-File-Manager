@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#020617">
+    <title>AI File Manager - Profile</title>
+
+    <link rel="stylesheet" href="style.css?v=1">
+    <link rel="stylesheet" href="../assets/theme.css">
+</head>
+
+<body>
+    <div class="app">
+
+        <header class="topbar">
+
+            <button
+                class="back-button"
+                id="back-button"
+                type="button"
+                aria-label="Back"
+            >
+                ←
+            </button>
+
+            <div class="brand">
+                <div class="brand-icon">AI</div>
+
+                <div>
+                    <h1>AI File Manager</h1>
+                    <p>Profile</p>
+                </div>
+            </div>
+
+        </header>
+
+        <main class="profile-page">
+
+            <section class="page-intro">
+                <p class="eyebrow">ACCOUNT</p>
+                <h2>Your Profile</h2>
+                <p>Manage your account information.</p>
+            </section>
+
+            <section class="profile-card">
+
+                <div class="profile-avatar" aria-hidden="true">
+                    U
+                </div>
+
+                <div class="profile-summary">
+                    <h3>User Profile</h3>
+                    <p>Your account information will appear here.</p>
+                </div>
+
+            </section>
+
+            <section class="profile-section">
+
+                <div class="section-heading">
+                    <h3>Account Information</h3>
+                </div>
+
+                <article class="profile-info-card">
+                    <span class="info-label">Username</span>
+                    <strong id="profile-username">Not connected</strong>
+                </article>
+
+                <article class="profile-info-card">
+                    <span class="info-label">Email</span>
+                    <strong id="profile-email">Not connected</strong>
+                </article>
+
+            </section>
+
+            <section class="profile-section">
+
+                <div class="section-heading">
+                    <h3>Account & Security</h3>
+                </div>
+
+                <button class="profile-action" type="button">
+                    <span>✏️</span>
+                    <span>
+                        <strong>Edit Profile</strong>
+                        <small>Update your account information</small>
+                    </span>
+                    <span>›</span>
+                </button>
+
+                <button class="profile-action" type="button">
+                    <span>🔒</span>
+                    <span>
+                        <strong>Security</strong>
+                        <small>Password and account security</small>
+                    </span>
+                    <span>›</span>
+                </button>
+
+            </section>
+
+        </main>
+
+        <nav class="bottom-nav">
+
+            <button class="nav-item" data-page="dashboard">
+                <span>⌂</span>
+                <small>Home</small>
+            </button>
+
+            <button class="nav-item" data-page="files">
+                <span>📁</span>
+                <small>Files</small>
+            </button>
+
+            <button class="nav-item" data-page="ai">
+                <span>🤖</span>
+                <small>AI</small>
+            </button>
+
+            <button class="nav-item" data-page="settings">
+                <span>⚙️</span>
+                <small>Settings</small>
+            </button>
+
+        </nav>
+
+    </div>
+
+    <script src="../assets/theme.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

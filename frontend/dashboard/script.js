@@ -1,14 +1,62 @@
 const menuButton = document.getElementById("menu-button");
+const menuClose = document.getElementById("menu-close");
+const menuOverlay = document.getElementById("menu-overlay");
+const sideMenu = document.getElementById("side-menu");
+const sideMenuItems = document.querySelectorAll(".side-menu-item");
 const viewAllButton = document.getElementById("view-all");
 
 const actionCards = document.querySelectorAll(".action-card");
 const navItems = document.querySelectorAll(".nav-item");
 const fileMenus = document.querySelectorAll(".file-menu");
 
-/* Top menu */
+/* Navigation drawer */
+
+function closeMenu() {
+    document.body.classList.remove("menu-open");
+    sideMenu.setAttribute("aria-hidden", "true");
+}
 
 menuButton.addEventListener("click", () => {
-    alert("Navigation menu will be expanded here.");
+    document.body.classList.add("menu-open");
+    sideMenu.setAttribute("aria-hidden", "false");
+});
+
+menuClose.addEventListener("click", closeMenu);
+menuOverlay.addEventListener("click", closeMenu);
+
+sideMenuItems.forEach((item) => {
+    item.addEventListener("click", () => {
+        const page = item.dataset.page;
+
+        if (page === "dashboard") {
+            window.location.href = "../dashboard/index.html";
+            return;
+        }
+
+        if (page === "files") {
+            window.location.href = "../search/index.html";
+            return;
+        }
+
+        if (page === "ai") {
+            window.location.href = "../ai/index.html";
+            return;
+        }
+
+        if (page === "settings") {
+            window.location.href = "../settings/index.html";
+            return;
+        }
+
+        if (page === "profile") {
+            window.location.href = "../profile/index.html";
+            return;
+        }
+
+        if (page === "logout") {
+            alert("Logout will be connected to authentication later.");
+        }
+    });
 });
 
 /* Recent files */
@@ -21,7 +69,7 @@ viewAllButton.addEventListener("click", () => {
 
 actionCards.forEach((card) => {
     card.addEventListener("click", () => {
-        const action = card.textContent.trim();
+        const action = card.querySelector("span:last-child").textContent.trim();
 
         if (action === "Files") {
             window.location.href = "../search/index.html";
