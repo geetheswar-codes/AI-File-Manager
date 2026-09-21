@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f172a">
     <title>AI File Manager</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -30,13 +30,13 @@
             <form id="login-form">
 
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">Email</label>
 
                     <input
                         type="text"
                         id="username"
                         name="username"
-                        placeholder="Enter your username"
+                        placeholder="Enter your email"
                         autocomplete="username"
                         required
                     >
@@ -65,11 +65,20 @@
                     </div>
                 </div>
 
+                <div class="auth-links">
+                    <a href="#" id="forgot-password">Forgot password?</a>
+                </div>
+
                 <button type="submit" id="login-button">
                     <span id="button-text">Sign in</span>
                 </button>
 
                 <p id="login-message" role="alert"></p>
+
+                <p class="signup-prompt">
+                    Don't have an account?
+                    <a href="../register/index.html">Sign up</a>
+                </p>
 
             </form>
 

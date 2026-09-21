@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Create Account - AI File Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="register-page">
+
+        <section class="register-card">
+
+            <div class="brand">
+                <div class="brand-icon">AI</div>
+
+                <div>
+                    <h1>AI File Manager</h1>
+                    <p>Intelligent file management</p>
+                </div>
+            </div>
+
+            <div class="welcome">
+                <h2>Create your account</h2>
+                <p>Set up your account to manage your files securely.</p>
+            </div>
+
+            <form id="register-form">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Choose a username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="toggle-password"
+                            aria-label="Show password"
+                        >
+                            Show
+                        </button>
+                    </div>
+
+                    <p class="password-hint">
+                        8+ characters, uppercase, lowercase, number, and special character.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm password</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="confirm-password"
+                            name="confirm-password"
+                            placeholder="Re-enter your password"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="toggle-confirm-password"
+                            aria-label="Show password"
+                        >
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="register-button">
+                    <span id="button-text">Create account</span>
+                </button>
+
+                <p id="register-message" role="alert"></p>
+
+                <p class="signin-prompt">
+                    Already have an account?
+                    <a href="../login/index.html">Sign in</a>
+                </p>
+
+            </form>
+
+            <footer>
+                <span>🔒 Secure</span>
+                <span>•</span>
+                <span>AI-powered</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

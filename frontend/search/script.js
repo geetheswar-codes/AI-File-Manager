@@ -12,15 +12,22 @@ const folderCards = document.querySelectorAll(".folder-card");
 const fileMenus = document.querySelectorAll(".file-menu");
 const navItems = document.querySelectorAll(".nav-item");
 
+/* Search and filters */
+
 function updateFiles() {
     const query = searchInput.value.trim().toLowerCase();
-    const activeFilter = document.querySelector(".filter.active").dataset.filter;
+    const activeFilter =
+        document.querySelector(".filter.active").dataset.filter;
 
     const files = document.querySelectorAll(".file-item");
     let visibleCount = 0;
 
     files.forEach((file) => {
-        const name = file.querySelector(".file-info strong").textContent.toLowerCase();
+        const name = file
+            .querySelector(".file-info strong")
+            .textContent
+            .toLowerCase();
+
         const type = file.dataset.type;
 
         const matchesSearch = name.includes(query);
@@ -40,50 +47,24 @@ function updateFiles() {
         `${visibleCount} ${visibleCount === 1 ? "file" : "files"}`;
 
     emptyMessage.hidden = visibleCount !== 0;
-
     clearSearch.hidden = query.length === 0;
 
-    fileHeading.textContent = query ? "Search Results" : "Recent Files";
+    fileHeading.textContent =
+        query ? "Search Results" : "Recent Files";
 }
 
-/* File View */
+/* File view preference */
 
 function applyFileView() {
     const view = localStorage.getItem("fileView") || "List";
-    const isGrid = view === "Grid";
 
-    fileList.classList.toggle("grid-view", isGrid);
-
-    if (isGrid) {
-        fileList.style.display = "grid";
-        fileList.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
-        fileList.style.gap = "12px";
-
-        document.querySelectorAll(".file-item").forEach((file) => {
-            file.style.display = "flex";
-            file.style.flexDirection = "column";
-            file.style.alignItems = "flex-start";
-            file.style.justifyContent = "center";
-            file.style.position = "relative";
-            file.style.minHeight = "150px";
-        });
-    } else {
-        fileList.style.display = "flex";
-        fileList.style.flexDirection = "column";
-        fileList.style.gap = "9px";
-
-        document.querySelectorAll(".file-item").forEach((file) => {
-            file.style.display = "flex";
-            file.style.flexDirection = "row";
-            file.style.alignItems = "center";
-            file.style.justifyContent = "initial";
-            file.style.position = "static";
-            file.style.minHeight = "68px";
-        });
-    }
+    fileList.classList.toggle("grid-view", view === "Grid");
+    fileList.dataset.view = view.toLowerCase();
 }
 
 applyFileView();
+
+/* Search */
 
 searchInput.addEventListener("input", updateFiles);
 
@@ -92,6 +73,8 @@ clearSearch.addEventListener("click", () => {
     searchInput.focus();
     updateFiles();
 });
+
+/* Filters */
 
 filters.forEach((filter) => {
     filter.addEventListener("click", () => {
@@ -104,31 +87,10 @@ filters.forEach((filter) => {
     });
 });
 
+/* Navigation */
+
 backButton.addEventListener("click", () => {
     window.location.href = "../dashboard/index.html";
-});
-
-addButton.addEventListener("click", () => {
-    alert("File upload will be connected to the backend soon.");
-});
-
-folderCards.forEach((folder) => {
-    folder.addEventListener("click", () => {
-        const folderName = folder.querySelector("span:nth-child(2)").textContent;
-
-        alert(`${folderName} folder browsing will be connected soon.`);
-    });
-});
-
-fileMenus.forEach((menu) => {
-    menu.addEventListener("click", () => {
-        const fileName = menu
-            .closest(".file-item")
-            .querySelector(".file-info strong")
-            .textContent;
-
-        alert(`Options for ${fileName} will be connected soon.`);
-    });
 });
 
 navItems.forEach((item) => {
@@ -148,6 +110,37 @@ navItems.forEach((item) => {
         if (page === "settings") {
             window.location.href = "../settings/index.html";
         }
+    });
+});
+
+/* Add */
+
+addButton.addEventListener("click", () => {
+    alert("File upload will be connected to the backend soon.");
+});
+
+/* Folders */
+
+folderCards.forEach((folder) => {
+    folder.addEventListener("click", () => {
+        const folderName = folder
+            .querySelector("span:nth-child(2)")
+            .textContent;
+
+        alert(`${folderName} folder browsing will be connected soon.`);
+    });
+});
+
+/* File options */
+
+fileMenus.forEach((menu) => {
+    menu.addEventListener("click", () => {
+        const fileName = menu
+            .closest(".file-item")
+            .querySelector(".file-info strong")
+            .textContent;
+
+        alert(`Options for ${fileName} will be connected soon.`);
     });
 });
 

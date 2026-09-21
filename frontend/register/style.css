@@ -16,7 +16,7 @@ body {
         radial-gradient(circle at top, #1e293b 0%, #020617 55%);
 }
 
-.login-page {
+.register-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -24,7 +24,7 @@ body {
     padding: 20px;
 }
 
-.login-card {
+.register-card {
     width: 100%;
     max-width: 430px;
     padding: 30px 24px;
@@ -136,7 +136,7 @@ body {
     cursor: pointer;
 }
 
-#login-button {
+#register-button {
     width: 100%;
     min-height: 50px;
     margin-top: 4px;
@@ -150,20 +150,20 @@ body {
     transition: transform 0.15s, background 0.2s;
 }
 
-#login-button:hover {
+#register-button:hover {
     background: #1d4ed8;
 }
 
-#login-button:active {
+#register-button:active {
     transform: scale(0.98);
 }
 
-#login-button:disabled {
+#register-button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
 }
 
-#login-message {
+#register-message {
     min-height: 20px;
     margin-top: 16px;
     text-align: center;
@@ -183,11 +183,11 @@ footer {
 /* Responsive Login Layout */
 
 @media (max-width: 599px) {
-    .login-page {
+    .register-page {
         padding: 14px;
     }
 
-    .login-card {
+    .register-card {
         max-width: 460px;
         padding: 26px 20px;
         border-radius: 18px;
@@ -203,11 +203,11 @@ footer {
 }
 
 @media (min-width: 600px) {
-    .login-page {
+    .register-page {
         padding: 28px;
     }
 
-    .login-card {
+    .register-card {
         max-width: 500px;
         padding: 34px 30px;
     }
@@ -226,11 +226,11 @@ footer {
 }
 
 @media (min-width: 900px) {
-    .login-page {
+    .register-page {
         padding: 40px;
     }
 
-    .login-card {
+    .register-card {
         max-width: 520px;
         padding: 38px 34px;
     }
@@ -250,19 +250,52 @@ footer {
 }
 
 @media (min-width: 1200px) {
-    .login-page {
+    .register-page {
         padding: 50px;
     }
 
-    .login-card {
+    .register-card {
         max-width: 540px;
         padding: 42px 38px;
     }
 }
 
 @media (min-width: 1500px) {
-    .login-card {
+    .register-card {
         max-width: 560px;
         padding: 46px 42px;
     }
+}
+
+.password-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #64748b;
+}
+
+.auth-links {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -8px;
+    margin-bottom: 16px;
+}
+
+.auth-links a,
+.signin-prompt a {
+    color: #60a5fa;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-links a:hover,
+.signin-prompt a:hover {
+    text-decoration: underline;
+}
+
+.signin-prompt {
+    margin-top: 18px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
 }

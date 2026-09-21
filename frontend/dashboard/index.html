@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#020617">
     <title>AI File Manager - Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="../assets/theme.css">
 </head>
 
 <body>
@@ -24,6 +25,60 @@
                 ☰
             </button>
         </header>
+
+        <div class="menu-overlay" id="menu-overlay"></div>
+
+        <aside class="side-menu" id="side-menu" aria-hidden="true">
+            <div class="side-menu-header">
+                <div>
+                    <strong>AI File Manager</strong>
+                    <span>Navigation</span>
+                </div>
+
+                <button
+                    class="menu-close"
+                    id="menu-close"
+                    type="button"
+                    aria-label="Close menu"
+                >
+                    ×
+                </button>
+            </div>
+
+            <nav class="side-menu-nav">
+                <button class="side-menu-item" data-page="dashboard">
+                    <span>🏠</span>
+                    <span>Dashboard</span>
+                </button>
+
+                <button class="side-menu-item" data-page="files">
+                    <span>📁</span>
+                    <span>Files</span>
+                </button>
+
+                <button class="side-menu-item" data-page="ai">
+                    <span>🤖</span>
+                    <span>AI Assistant</span>
+                </button>
+
+                <button class="side-menu-item" data-page="profile">
+                    <span>👤</span>
+                    <span>Profile</span>
+                </button>
+
+                <button class="side-menu-item" data-page="settings">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </nav>
+
+            <div class="side-menu-footer">
+                <button class="side-menu-item logout-item" data-page="logout">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
 
         <main class="dashboard">
 
@@ -174,6 +229,7 @@
 
     </div>
 
+    <script src="../assets/theme.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
