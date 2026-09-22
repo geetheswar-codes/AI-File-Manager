@@ -101,3 +101,38 @@ def test_coordinator_detects_duplicate_files(tmp_path):
     finally:
         db.close()
         engine.dispose()
+
+
+def test_coordinator_scans_only_explicitly_authorized_files(tmp_path):
+    """An explicit scan must not index or expose neighboring files."""
+
+    owned_file = Path(tmp_path) / "owned.txt"
+    other_user_file = Path(tmp_path) / "other-user.txt"
+    owned_file.write_text("private owned content")
+    other_user_file.write_text("private other-user content")
+
+    engine = create_engine(
+        f"sqlite:///{tmp_path / 'test.db'}",
+        connect_args={"check_same_thread": False},
+    )
+    Base.metadata.create_all(engine)
+    SessionLocal = sessionmaker(bind=engine)
+    db = SessionLocal()
+
+    try:
+        result = AIScanCoordinator(db).scan_and_analyze(
+            file_paths=[str(owned_file)],
+        )
+
+        assert result["scanner"]["files_found"] == 1
+        assert result["incremental"]["files_indexed"] == 1
+        assert result["duplicates"] == []
+
+        indexed_paths = {
+            item.path
+            for item in db.query(AIFileIndex).all()
+        }
+        assert indexed_paths == {str(owned_file.resolve())}
+    finally:
+        db.close()
+        engine.dispose()

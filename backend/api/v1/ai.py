@@ -119,12 +119,23 @@ def scan_file_directory(
             detail="Physical file not found",
         )
 
-    root_path = str(file_path.parent)
-
     coordinator = AIScanCoordinator(db)
 
+    user_file_paths = []
+    for owned_file in FileService.get_all_files(db, current_user.id):
+        if not owned_file.storage_path:
+            continue
+
+        owned_path = Path(owned_file.storage_path).resolve()
+        try:
+            owned_path.relative_to(storage_root)
+        except ValueError:
+            continue
+
+        user_file_paths.append(str(owned_path))
+
     return coordinator.scan_and_analyze(
-        root_path=root_path,
+        file_paths=user_file_paths,
     )
 
 @router.post(

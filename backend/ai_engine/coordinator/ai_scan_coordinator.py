@@ -76,15 +76,23 @@ class AIScanCoordinator:
 
     def scan_and_analyze(
         self,
-        root_path: str,
+        root_path: str | None = None,
+        file_paths: list[str] | None = None,
     ) -> Dict[str, Any]:
         """
         Scan an authorized directory and process only files
         that are new or have changed since the previous scan.
         """
 
-        # Step 1: Discover files.
-        scan_result = self.scanner.scan(root_path)
+        # Step 1: Discover files.  Managed uploads can be scoped to an
+        # explicit path set so one user's scan never traverses another
+        # user's files in the shared upload directory.
+        if file_paths is not None:
+            scan_result = self.scanner.scan_files(file_paths)
+        elif root_path is not None:
+            scan_result = self.scanner.scan(root_path)
+        else:
+            raise ValueError("A root path or file paths are required.")
 
         scanned_files = scan_result.get("files", [])
 
@@ -124,9 +132,12 @@ class AIScanCoordinator:
         )
 
         # Step 5: Detect duplicates from the complete index.
-        indexed_files = (
-            self.index_service.get_all_indexed_files()
-        )
+        if file_paths is not None:
+            indexed_files = self.index_service.get_indexed_files_by_paths(
+                [file_data["path"] for file_data in scanned_files]
+            )
+        else:
+            indexed_files = self.index_service.get_all_indexed_files()
 
         duplicate_groups = (
             self.duplicate_detector.find_duplicates(

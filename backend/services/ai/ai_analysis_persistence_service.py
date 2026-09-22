@@ -10,6 +10,7 @@ class AIAnalysisPersistenceService:
     """Validate and persist structured output from the AI engine."""
 
     REQUIRED_FIELDS = {"summary", "category", "tags", "risk_level", "confidence"}
+    ALLOWED_RISK_LEVELS = {"Low", "Medium", "High"}
 
     def __init__(self, db: Session):
         self.db = db
@@ -22,13 +23,19 @@ class AIAnalysisPersistenceService:
     ) -> AIFileAnalysis | None:
         if not self.REQUIRED_FIELDS.issubset(analysis):
             return None
+
         tags = analysis["tags"]
+        risk_level = analysis["risk_level"]
         confidence = analysis["confidence"]
+
         if (
             not isinstance(tags, list)
             or not all(isinstance(tag, str) for tag in tags)
+            or not isinstance(risk_level, str)
+            or risk_level not in self.ALLOWED_RISK_LEVELS
             or isinstance(confidence, bool)
             or not isinstance(confidence, (int, float))
+            or not 0.0 <= confidence <= 1.0
         ):
             return None
 
@@ -39,7 +46,7 @@ class AIAnalysisPersistenceService:
                 "summary": str(analysis["summary"]),
                 "category": str(analysis["category"]),
                 "tags": tags,
-                "risk_level": str(analysis["risk_level"]),
+                "risk_level": risk_level,
                 "confidence": float(confidence),
             },
             model=model or "unknown",

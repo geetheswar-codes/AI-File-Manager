@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
 
     AI_RUNTIME: str = "ollama"
-    AI_MODEL: str = "llama3.1:latest"
+    AI_MODEL: str = "qwen2.5:3b"
     AI_MAX_CONTEXT_LENGTH: int = 4096
     AI_SERVER_URL: str = "http://127.0.0.1:11434"
 

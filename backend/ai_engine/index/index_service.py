@@ -54,6 +54,21 @@ class AIFileIndexService:
 
         return self.db.query(AIFileIndex).all()
 
+    def get_indexed_files_by_paths(
+        self,
+        paths: List[str],
+    ) -> List[AIFileIndex]:
+        """Return indexed files for an explicitly authorized path set."""
+
+        if not paths:
+            return []
+
+        return (
+            self.db.query(AIFileIndex)
+            .filter(AIFileIndex.path.in_(paths))
+            .all()
+        )
+
     def is_new_file(self, metadata: Dict[str, Any]) -> bool:
         """
         Determine whether a file has never been indexed.

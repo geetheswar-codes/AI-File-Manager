@@ -124,6 +124,53 @@ class SystemScanner:
             "summary": self.get_summary()
         }
 
+    def scan_files(self, file_paths: list[str]):
+        """Scan an explicit set of files without traversing a directory.
+
+        This is used for managed uploads, which may share a physical storage
+        directory across users.  Limiting the scanner at the source avoids
+        collecting metadata or content from neighboring users' uploads.
+        """
+
+        self.files = []
+        self.folders = []
+        self.errors = []
+        self.start_time = time.time()
+        self.end_time = None
+
+        for file_path in file_paths:
+            path = Path(file_path).expanduser()
+
+            if not path.exists():
+                self.errors.append({
+                    "path": str(path),
+                    "error": "Path does not exist",
+                })
+                continue
+
+            if not path.is_file():
+                self.errors.append({
+                    "path": str(path),
+                    "error": "Path is not a file",
+                })
+                continue
+
+            if self.should_skip(path):
+                continue
+
+            metadata = self.scan_file(str(path))
+            if metadata:
+                self.files.append(metadata)
+
+        self.end_time = time.time()
+
+        return {
+            "files": self.files,
+            "folders": self.folders,
+            "errors": self.errors,
+            "summary": self.get_summary(),
+        }
+
     def scan_directory(self, directory_path: str):
         """
         Scan a directory recursively.
