@@ -1,12 +1,14 @@
+from typing import BinaryIO, Iterable
+
 from sqlalchemy.orm import Session
 
-from backend.models.folder import Folder
 from backend.repositories.file_repository import FileRepository
 from backend.repositories.folder_repository import FolderRepository
+from backend.services.storage.storage_factory import get_storage_manager
+from backend.services.storage.storage_provider import StorageMetadata
 
 
 class FileService:
-
     @staticmethod
     def create_file(
         db: Session,
@@ -55,7 +57,10 @@ class FileService:
         )
 
     @staticmethod
-    def get_file_by_storage_path(db: Session, storage_path: str):
+    def get_file_by_storage_path(
+        db: Session,
+        storage_path: str,
+    ):
         return FileRepository.get_by_storage_path(
             db=db,
             storage_path=storage_path,
@@ -84,3 +89,49 @@ class FileService:
             db=db,
             file=file,
         )
+
+    @staticmethod
+    def upload_to_storage(
+        file: BinaryIO,
+        destination: str,
+    ) -> str:
+        storage = get_storage_manager()
+        return storage.upload(
+            file=file,
+            destination=destination,
+        )
+
+    @staticmethod
+    def download_from_storage(
+        storage_path: str,
+    ) -> BinaryIO:
+        storage = get_storage_manager()
+        return storage.download(storage_path)
+
+    @staticmethod
+    def delete_from_storage(
+        storage_path: str,
+    ) -> None:
+        storage = get_storage_manager()
+        storage.delete(storage_path)
+
+    @staticmethod
+    def storage_exists(
+        storage_path: str,
+    ) -> bool:
+        storage = get_storage_manager()
+        return storage.exists(storage_path)
+
+    @staticmethod
+    def get_storage_metadata(
+        storage_path: str,
+    ) -> StorageMetadata:
+        storage = get_storage_manager()
+        return storage.get_metadata(storage_path)
+
+    @staticmethod
+    def list_storage(
+        prefix: str = "",
+    ) -> Iterable[str]:
+        storage = get_storage_manager()
+        return storage.list(prefix)

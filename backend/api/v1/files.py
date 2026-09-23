@@ -1,5 +1,4 @@
 import os
-import shutil
 import uuid
 
 from fastapi import (
@@ -10,7 +9,7 @@ from fastapi import (
     HTTPException,
     UploadFile,
 )
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from backend.core.database import get_db
@@ -19,12 +18,10 @@ from backend.models.user import User
 from backend.schemas.file import RenameRequest
 from backend.services.file_service import FileService
 
-
 router = APIRouter(
     prefix="/files",
     tags=["Files"],
 )
-
 
 UPLOAD_DIR = "storage/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -47,31 +44,32 @@ async def upload_file(
         unique_name,
     )
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(
-            file.file,
-            buffer,
+    try:
+        FileService.upload_to_storage(
+            file=file.file,
+            destination=file_path,
         )
 
-    file_data = {
-        "filename": file.filename,
-        "stored_name": unique_name,
-        "file_size": os.path.getsize(file_path),
-        "file_type": file.content_type,
-        "storage_path": file_path,
-        "owner_id": current_user.id,
-        "folder_id": folder_id,
-    }
+        file_data = {
+            "filename": file.filename,
+            "stored_name": unique_name,
+            "file_size": FileService.get_storage_metadata(
+                file_path
+            ).size,
+            "file_type": file.content_type,
+            "storage_path": file_path,
+            "owner_id": current_user.id,
+            "folder_id": folder_id,
+        }
 
-    try:
         db_file = FileService.create_file(
             db=db,
             file_data=file_data,
         )
 
     except PermissionError as exc:
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        if FileService.storage_exists(file_path):
+            FileService.delete_from_storage(file_path)
 
         raise HTTPException(
             status_code=403,
@@ -79,8 +77,8 @@ async def upload_file(
         )
 
     except ValueError as exc:
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        if FileService.storage_exists(file_path):
+            FileService.delete_from_storage(file_path)
 
         raise HTTPException(
             status_code=404,
@@ -194,8 +192,12 @@ def delete_file(
             detail="You do not have permission to delete this file",
         )
 
-    if file.storage_path and os.path.exists(file.storage_path):
-        os.remove(file.storage_path)
+    if file.storage_path and FileService.storage_exists(
+        file.storage_path
+    ):
+        FileService.delete_from_storage(
+            file.storage_path
+        )
 
     FileService.delete_file(
         db=db,
@@ -230,13 +232,24 @@ def download_file(
             detail="You do not have permission to download this file",
         )
 
-    if not file.storage_path or not os.path.exists(file.storage_path):
+    if not file.storage_path or not FileService.storage_exists(
+        file.storage_path
+    ):
         raise HTTPException(
             status_code=404,
             detail="Physical file not found",
         )
 
-    return FileResponse(
-        path=file.storage_path,
-        filename=file.filename,
+    stored_file = FileService.download_from_storage(
+        file.storage_path
+    )
+
+    return StreamingResponse(
+        stored_file,
+        media_type=file.file_type or "application/octet-stream",
+        headers={
+            "Content-Disposition": (
+                f'attachment; filename="{file.filename}"'
+            )
+        },
     )

@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     AI_SERVER_URL: str = "http://127.0.0.1:11434"
 
     # ----------------------------
+    # Supabase Storage
+    # ----------------------------
+    SUPABASE_URL: str = ""
+    SUPABASE_SERVICE_KEY: str = ""
+    SUPABASE_STORAGE_BUCKET: str = "files"
+
+    # ----------------------------
     # Security
     # ----------------------------
     SECRET_KEY: str
