@@ -575,7 +575,7 @@ body.menu-open .side-menu {
     height: 70px;
 
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
 
     border-top: 1px solid #1e293b;
 
@@ -622,7 +622,7 @@ body.menu-open .side-menu {
     }
 
     .actions {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 

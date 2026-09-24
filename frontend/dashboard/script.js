@@ -113,6 +113,11 @@ navItems.forEach((item) => {
             return;
         }
 
+        if (section === "Profile") {
+            window.location.href = "../profile/index.html";
+            return;
+        }
+
         if (section === "Settings") {
             window.location.href = "../settings/index.html";
         }

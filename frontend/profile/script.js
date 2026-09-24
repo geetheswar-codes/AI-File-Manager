@@ -24,6 +24,11 @@ navItems.forEach((item) => {
             return;
         }
 
+        if (page === "profile") {
+            window.location.href = "../profile/index.html";
+            return;
+        }
+
         if (page === "settings") {
             window.location.href = "../settings/index.html";
         }

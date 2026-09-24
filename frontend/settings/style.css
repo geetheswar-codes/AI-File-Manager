@@ -328,7 +328,7 @@ button {
     height: 70px;
 
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
 
     border-top: 1px solid #1e293b;
 
@@ -376,6 +376,58 @@ button {
 
     .setting-card {
         padding: 14px 16px;
+    }
+}
+
+/* Desktop navigation */
+
+@media (min-width: 700px) {
+    .app {
+        padding-bottom: 0;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        left: 24px;
+        right: auto;
+        top: 96px;
+        bottom: auto;
+
+        width: 190px;
+        height: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        border: 1px solid #1e293b;
+        border-radius: 16px;
+
+        overflow: hidden;
+    }
+
+    .nav-item {
+        min-height: 58px;
+
+        flex-direction: row;
+        justify-content: flex-start;
+
+        padding: 0 18px;
+
+        gap: 12px;
+    }
+
+    .nav-item span {
+        width: 24px;
+        text-align: center;
+    }
+
+    .nav-item small {
+        font-size: 12px;
+    }
+
+    .settings-page {
+        margin-left: 238px;
+        margin-right: 24px;
     }
 }
 
